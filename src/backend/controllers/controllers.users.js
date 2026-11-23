@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const ROL_POR_DEFECTO = "usuario";
 const ROL_ADMIN = process.env.ROL_ADMIN ?? "admin";
-const DURACION_SESION = "1m";
+const DURACION_SESION = "15m";
 
 function publicUser(user) {
   if (!user) return user;

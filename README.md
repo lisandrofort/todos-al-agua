@@ -105,7 +105,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 |---|---|---|---|
 | `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`) |
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
-| `POST` | `/users/refresh` | privado | Renueva el JWT por otros 1 minuto de inactividad |
+| `POST` | `/users/refresh` | privado | Renueva el JWT por otros 15 minutos de inactividad |
 | `GET` | `/users` | privado | Lista usuarios (sin contraseñas) |
 | `GET` | `/users/:id` | privado | Detalle de un usuario |
 | `PUT` | `/users/:id` | privado | Actualiza datos y rol |
@@ -122,7 +122,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 
 ## Autenticación y roles
 
-- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña), con vencimiento de **1 minuto de inactividad**. La actividad del usuario (clicks, teclas, scroll, cambio de pestaña) renueva el token cuando quedan menos de 20 segundos; si no hay actividad, la sesión se cierra y `/login` muestra un aviso. A los 10 segundos del vencimiento aparece un diálogo para “Seguir conectado” o “Cerrar sesión”. La sesión también se sincroniza entre pestañas.
+- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña), con vencimiento de **15 minutos de inactividad**. La actividad del usuario (clicks, teclas, scroll, cambio de pestaña) renueva el token cuando quedan menos de 5 minutos; si no hay actividad, la sesión se cierra y `/login` muestra un aviso. A los 2 minutos del vencimiento aparece un diálogo para “Seguir conectado” o “Cerrar sesión”. La sesión también se sincroniza entre pestañas.
 - El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles los cambia un administrador desde `/admin/usuarios`.
 - Roles: `admin` (todo), `cantina` (panel + editar menú), `huerta` (panel + editar huerta), `usuario` (sin acceso al panel).
 - Un administrador **no puede modificar ni eliminar a otro administrador** (ni su rol, email, nombre o contraseña). Tampoco puede cambiar su propio rol ni eliminarse a sí mismo. Estas reglas se validan en el backend y se reflejan en el panel deshabilitando el selector de rol para cuentas admin.
@@ -178,7 +178,7 @@ git branch -d < feature-nombre-tarea >
 
 ## Solución de problemas
 
-- **401 al querer entrar:** el JWT venció por inactividad (1 minuto) o es inválido. El frontend cierra la sesión automáticamente y te devuelve a `/login`; iniciá sesión de nuevo. Si el backend está suspendido (Render gratuito), el refresh no puede renovar y la sesión vence al llegar a 1 minuto.
+- **401 al querer entrar:** el JWT venció por inactividad (15 minutos) o es inválido. El frontend cierra la sesión automáticamente y te devuelve a `/login`; iniciá sesión de nuevo. Si el backend está suspendido (Render gratuito), el refresh no puede renovar y la sesión vence al llegar a 15 minutos.
 - **"No se pudo conectar con el servidor":** revisar `VITE_API_URL` y que el backend esté activo (en Render el plan gratuito puede suspender el servicio).
 - **404 al recargar `/admin`:** confirmar que `vercel.json` esté en el *Root Directory* configurado en Vercel.
 - **Error de Firebase al arrancar:** revisar las variables `API_KEY`…`APP_ID` y que Firestore esté habilitado.

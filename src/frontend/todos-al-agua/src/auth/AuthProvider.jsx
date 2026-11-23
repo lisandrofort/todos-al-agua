@@ -10,9 +10,9 @@ import {
   SESSION_EXPIRED_EVENT,
 } from "../api/client";
 
-const REFRESH_WINDOW_MS = 20 * 1000;
-const WARNING_WINDOW_MS = 10 * 1000;
-const ACTIVITY_THROTTLE_MS = 5 * 1000;
+const REFRESH_WINDOW_MS = 5 * 60 * 1000;
+const WARNING_WINDOW_MS = 2 * 60 * 1000;
+const ACTIVITY_THROTTLE_MS = 30 * 1000;
 const ACTIVITY_EVENTS = ["pointerdown", "keydown", "scroll", "visibilitychange"];
 const ACTIVITY_LISTENER_OPTIONS = { passive: true, capture: true };
 
