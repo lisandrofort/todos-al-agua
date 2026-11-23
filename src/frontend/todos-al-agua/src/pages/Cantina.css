@@ -55,71 +55,15 @@ html {
   background: var(--color-cantina-sand);
 }
 
-.cantina .home-header {
-  background: rgba(255, 251, 245, 0.94);
-  border-bottom-color: rgba(111, 74, 47, 0.12);
-}
+/* Navbar y footer mantienen el tema visual del Home (Header.css / Footer.css). */
 
-.cantina .brand-mark {
-  background: linear-gradient(145deg, var(--color-cantina-terracotta), var(--color-cantina-brown));
-  box-shadow: 0 8px 18px rgba(111, 74, 47, 0.24);
-}
-
-.cantina .brand-text strong {
-  color: var(--color-cantina-brown);
-}
-
-.cantina .brand-text small {
-  color: var(--color-cantina-muted);
-}
-
-.cantina .home-nav a {
-  color: var(--color-cantina-muted);
-}
-
-.cantina .home-nav a:hover,
-.cantina .home-nav a.is-active {
-  background: rgba(184, 92, 56, 0.12);
-  color: var(--color-cantina-brown);
-}
-
-.cantina .header-menu-toggle {
-  border-color: rgba(111, 74, 47, 0.16);
-  background: rgba(184, 92, 56, 0.1);
-  color: var(--color-cantina-brown);
-}
-
-.cantina .header-mobile-nav {
-  background: rgba(255, 251, 245, 0.98);
-  border-top-color: rgba(111, 74, 47, 0.12);
-}
-
-.cantina .header-mobile-nav a {
-  color: var(--color-cantina-muted);
-}
-
-.cantina .header-mobile-nav a:hover,
-.cantina .header-mobile-nav a.is-active {
-  background: rgba(184, 92, 56, 0.12);
-  color: var(--color-cantina-brown);
-}
-
-.cantina .header-mobile-logout {
-  color: var(--color-danger);
-}
-
-.cantina .header-mobile-logout:hover {
-  background: rgba(198, 40, 40, 0.1);
-  color: #9e1f1f;
-}
-
-.cantina .btn.btn-primary {
+.cantina main .btn.btn-primary {
   background: var(--color-cantina-brown);
   color: var(--color-cantina-light);
   box-shadow: 0 10px 24px rgba(111, 74, 47, 0.24);
 }
 
-.cantina .btn.btn-primary:hover {
+.cantina main .btn.btn-primary:hover {
   background: var(--color-cantina-brown-dark);
 }
 
@@ -257,22 +201,7 @@ html {
   color: var(--color-cantina-gold);
 }
 
-.cantina .home-footer {
-  background: var(--color-cantina-espresso);
-  color: rgba(255, 248, 238, 0.72);
-}
-
-.cantina .footer-brand {
-  color: var(--color-cantina-light);
-}
-
-.cantina .footer-brand span {
-  background: linear-gradient(145deg, var(--color-cantina-terracotta), var(--color-cantina-brown));
-}
-
-.cantina .footer-nav a:hover {
-  color: var(--color-cantina-light);
-}
+/* El footer conserva el tema oscuro del Home. */
 
 @media (max-width: 640px) {
   .cantina .container {

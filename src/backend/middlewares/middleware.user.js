@@ -20,7 +20,10 @@ function middlewareToken(req, res, next) {
         req.dataUser = jwt.verify(token, process.env.CANTINA_TOKEN);
         next();
     } catch (e) {
-        return res.status(401).json({ error: "La sesión no es válida o venció" });
+        if (e.name === "TokenExpiredError") {
+            return res.status(401).json({ error: "Tu sesión venció. Iniciá sesión nuevamente." });
+        }
+        return res.status(401).json({ error: "La sesión no es válida" });
     }
 }
 

@@ -109,6 +109,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 |---|---|---|---|
 | `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`) |
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
+| `POST` | `/users/refresh` | privado | Renueva el JWT por otros 1 minuto de inactividad |
 | `POST` | `/users/forgot-password` | público | Envía por email un link de recuperación (válido 30 min) |
 | `POST` | `/users/reset-password` | público | Cambia la contraseña usando el token del link |
 | `POST` | `/contact` | público | Envía la consulta del formulario por email |
@@ -128,7 +129,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 
 ## Autenticación y roles
 
-- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña), con vencimiento de 7 días.
+- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña), con vencimiento de **1 minuto de inactividad**. La actividad del usuario (clicks, teclas, scroll, cambio de pestaña) renueva el token cuando quedan menos de 20 segundos; si no hay actividad, la sesión se cierra y `/login` muestra un aviso. A los 10 segundos del vencimiento aparece un diálogo para “Seguir conectado” o “Cerrar sesión”. La sesión también se sincroniza entre pestañas.
 - El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles los cambia un administrador desde `/admin/usuarios`.
 - Roles: `admin` (todo), `cantina` (panel + editar menú), `huerta` (panel + editar huerta), `usuario` (sin acceso al panel).
 - El frontend guarda el token en `localStorage` bajo `todos-al-agua.token`, lo decodifica para obtener el rol y calcula los permisos desde `src/auth/permissions.js`.
@@ -182,7 +183,7 @@ git branch -d < feature-nombre-tarea >
 
 ## Solución de problemas
 
-- **401 al querer entrar:** el JWT venció o es inválido. Cerrar sesión y volver a iniciar.
+- **401 al querer entrar:** el JWT venció por inactividad (1 minuto) o es inválido. El frontend cierra la sesión automáticamente y te devuelve a `/login`; iniciá sesión de nuevo. Si el backend está suspendido (Render gratuito), el refresh no puede renovar y la sesión vence al llegar a 1 minuto.
 - **"No se pudo conectar con el servidor":** revisar `VITE_API_URL` y que el backend esté activo (en Render el plan gratuito puede suspender el servicio).
 - **404 al recargar `/admin`:** confirmar que `vercel.json` esté en el *Root Directory* configurado en Vercel.
 - **Error de Firebase al arrancar:** revisar las variables `API_KEY`…`APP_ID` y que Firestore esté habilitado.

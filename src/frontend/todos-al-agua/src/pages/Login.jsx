@@ -34,11 +34,11 @@ function validate(values) {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, sessionExpired } = useAuth();
   const registered = location.state?.registered;
   const recovered = location.state?.recovered;
   const needsAdmin = Boolean(location.state?.from) && user && user.rol !== "admin";
-  const [form, setForm] = useState({ email: "", password: "", remember: false });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -108,6 +108,12 @@ export default function Login() {
             <p className="login-card-subtitle">
               Ingresá tus datos para continuar.
             </p>
+
+            {sessionExpired && (
+              <div className="login-notice login-notice-info" role="status">
+                <p>Tu sesión venció por inactividad. Iniciá sesión nuevamente para continuar.</p>
+              </div>
+            )}
 
             {needsAdmin && (
               <div className="login-notice" role="alert">
@@ -194,15 +200,6 @@ export default function Login() {
               </div>
 
               <div className="login-options">
-                <label className="login-remember">
-                  <input
-                    type="checkbox"
-                    name="remember"
-                    checked={form.remember}
-                    onChange={handleChange}
-                  />
-                  Recordarme
-                </label>
                 <Link className="login-forgot" to="/recuperar">
                   ¿Olvidé mi contraseña?
                 </Link>
