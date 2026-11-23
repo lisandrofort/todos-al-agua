@@ -105,19 +105,19 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 |---|---|---|---|
 | `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`) |
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
-| `GET` | `/users` | 🔒 | Lista usuarios (sin contraseñas) |
-| `GET` | `/users/:id` | 🔒 | Detalle de un usuario |
-| `PUT` | `/users/:id` | 🔒 | Actualiza datos y rol |
-| `DELETE` | `/users/:id` | 🔒 | Elimina usuario |
+| `GET` | `/users` | público | Lista usuarios (sin contraseñas) |
+| `GET` | `/users/:id` | público | Detalle de un usuario |
+| `PUT` | `/users/:id` | público | Actualiza datos y rol |
+| `DELETE` | `/users/:id` | público | Elimina usuario |
 | `GET` | `/menu` | público | Categorías y platos |
 | `GET` | `/menu/category/:category` | público | Filtra por categoría |
 | `GET` | `/menu/:id` | público | Categoría por ID |
-| `POST` | `/menu` | 🔒 | Crea categoría |
-| `PUT` | `/menu/:id` | 🔒 | Actualiza categoría |
-| `DELETE` | `/menu/:id` | 🔒 | Elimina categoría |
-| `POST` | `/menu/:id/items` | 🔒 | Agrega plato |
-| `PUT` | `/menu/:id/items/:itemName` | 🔒 | Actualiza plato |
-| `DELETE` | `/menu/:id/items/:itemName` | 🔒 | Elimina plato |
+| `POST` | `/menu` | público | Crea categoría |
+| `PUT` | `/menu/:id` | público | Actualiza categoría |
+| `DELETE` | `/menu/:id` | público | Elimina categoría |
+| `POST` | `/menu/:id/items` | público | Agrega plato |
+| `PUT` | `/menu/:id/items/:itemName` | público | Actualiza plato |
+| `DELETE` | `/menu/:id/items/:itemName` | público | Elimina plato |
 
 ## Autenticación y roles
 
