@@ -81,6 +81,7 @@ Backend (`src/backend/.env`):
 | `RESEND_API_KEY` | API key de Resend para enviar emails de recuperación |
 | `EMAIL_FROM` | Remitente verificado en Resend |
 | `RESEND_API_URL` | URL de la API de Resend (opcional; por defecto `https://api.resend.com`) |
+| `CONTACT_TO_EMAIL` | Destinatario de los mensajes del formulario de contacto (por defecto `hola@todosalagua.com.ar`) |
 
 Frontend (`src/frontend/todos-al-agua/.env`):
 
@@ -110,6 +111,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
 | `POST` | `/users/forgot-password` | público | Envía por email un link de recuperación (válido 30 min) |
 | `POST` | `/users/reset-password` | público | Cambia la contraseña usando el token del link |
+| `POST` | `/contact` | público | Envía la consulta del formulario por email |
 | `GET` | `/users` | privado | Lista usuarios (sin contraseñas) |
 | `GET` | `/users/:id` | privado | Detalle de un usuario |
 | `PUT` | `/users/:id` | privado | Actualiza datos y rol |

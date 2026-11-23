@@ -48,6 +48,10 @@ export const apiAuth = {
     request("/users/reset-password", { method: "POST", body: { token, password } }),
 };
 
+export const apiContact = {
+  send: (data) => request("/contact", { method: "POST", body: data }),
+};
+
 export const apiMenu = {
   getAll: () => request("/menu"),
   getById: (id) => request(`/menu/${id}`),
