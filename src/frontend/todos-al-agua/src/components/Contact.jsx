@@ -1,4 +1,5 @@
 import ContactDetails from "../ui/ContactDetails";
+import ContactForm from "./ContactForm";
 import Eyebrow from "../ui/Eyebrow";
 import { ClockIcon, MailIcon, PinIcon } from "../ui/icons";
 import "./Contact.css";
@@ -39,12 +40,10 @@ export default function Contact() {
 
           <ContactDetails
             items={contactItems}
-            action={{
-              href: "mailto:hola@todosalagua.com.ar",
-              label: "Pedir información",
-            }}
             note="También podés acercarte a la pileta y charlar con nosotros."
-          />
+          >
+            <ContactForm label="Pedir información" />
+          </ContactDetails>
         </div>
       </div>
     </section>

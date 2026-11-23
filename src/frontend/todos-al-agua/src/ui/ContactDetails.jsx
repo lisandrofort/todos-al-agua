@@ -1,7 +1,7 @@
 import Button from "./Button";
 import "./ContactDetails.css";
 
-export default function ContactDetails({ items, action, note }) {
+export default function ContactDetails({ items, action, note, children }) {
   return (
     <div className="contact-panel">
       <ul className="contact-list">
@@ -20,9 +20,11 @@ export default function ContactDetails({ items, action, note }) {
         })}
       </ul>
 
-      <Button href={action.href} variant="light" block>
-        {action.label}
-      </Button>
+      {children ?? (
+        <Button href={action.href} variant="light" block>
+          {action.label}
+        </Button>
+      )}
       <p className="contact-note">{note}</p>
     </div>
   );

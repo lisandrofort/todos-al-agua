@@ -36,6 +36,7 @@ export default function Login() {
   const location = useLocation();
   const { user, login, logout, sessionExpired } = useAuth();
   const registered = location.state?.registered;
+  const recovered = location.state?.recovered;
   const needsAdmin = Boolean(location.state?.from) && user && user.rol !== "admin";
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
@@ -140,6 +141,12 @@ export default function Login() {
             {registered && (
               <p className="login-success" role="status">
                 ¡Registro exitoso! Iniciá sesión con tu cuenta.
+              </p>
+            )}
+
+            {recovered && (
+              <p className="login-success" role="status">
+                Contraseña actualizada. Iniciá sesión con tu nueva contraseña.
               </p>
             )}
 

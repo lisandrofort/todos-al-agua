@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiAuth } from "../api/client";
 import { Link, useLocation, useNavigate } from "react-router";
 import "../theme.css";
@@ -55,12 +55,31 @@ export default function Register() {
   });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null);
+
+  // Chequeo de disponibilidad mientras se escribe (debounce).
+  useEffect(() => {
+    const email = form.email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return undefined;
+
+    const timer = setTimeout(async () => {
+      try {
+        const { exists } = await apiAuth.emailExists(email);
+        setEmailStatus(exists ? "taken" : "available");
+      } catch {
+        setEmailStatus(null);
+      }
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [form.email]);
 
   function handleChange(event) {
     const { name, value } = event.target;
 
     setForm((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "" }));
+    if (name === "email") setEmailStatus(null);
   }
 
   async function handleSubmit(event) {
@@ -81,7 +100,12 @@ export default function Register() {
         state: { registered: true, from: location.state?.from },
       });
     } catch (error) {
-      setErrors({ general: error.message });
+      if (/ya hay un registro con este email/i.test(error.message)) {
+        setEmailStatus("taken");
+        setErrors({ email: "Ya existe una cuenta con ese email" });
+      } else {
+        setErrors({ general: error.message });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -165,6 +189,17 @@ export default function Register() {
                 {errors.email && (
                   <p className="login-error" id="register-email-error" role="alert">
                     {errors.email}
+                  </p>
+                )}
+                {!errors.email && emailStatus === "taken" && (
+                  <p className="login-error" role="status">
+                    Ya existe una cuenta con ese email.{" "}
+                    <Link to="/login">Iniciá sesión</Link>.
+                  </p>
+                )}
+                {!errors.email && emailStatus === "available" && (
+                  <p className="register-email-ok" role="status">
+                    Email disponible
                   </p>
                 )}
               </div>

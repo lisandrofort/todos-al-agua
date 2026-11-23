@@ -1,4 +1,5 @@
 import ContactDetails from "../ui/ContactDetails";
+import ContactForm from "./ContactForm";
 import Eyebrow from "../ui/Eyebrow";
 import { ClockIcon, MailIcon, PinIcon } from "../ui/icons";
 import "./Contact.css";
@@ -39,12 +40,10 @@ export default function HuertaContact() {
 
           <ContactDetails
             items={contactItems}
-            action={{
-              href: "mailto:hola@todosalagua.com.ar",
-              label: "Hacer una consulta",
-            }}
             note="También podés acercarte a la cantina de Todos al Agua para consultar por plantines."
-          />
+          >
+            <ContactForm label="Hacer una consulta" />
+          </ContactDetails>
         </div>
       </div>
     </section>

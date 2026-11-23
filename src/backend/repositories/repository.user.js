@@ -1,6 +1,18 @@
 const { admin } = require('../lib/firebase');
 const bcrypt = require('bcryptjs');
 
+function normalizeEmail(email) {
+  return String(email ?? '').trim().toLowerCase();
+}
+
+// Incluye la versión original sin normalizar para encontrar cuentas viejas
+// registradas antes de que se normalizara el email.
+function emailCandidates(email) {
+  const clean = String(email ?? '').trim();
+  const normalized = clean.toLowerCase();
+  return normalized === clean ? [normalized] : [normalized, clean];
+}
+
 class User {
   constructor() {
     this.db = admin;
@@ -21,33 +33,67 @@ class User {
 
   async create({ email, pass, name, nombre, rol }) {
     const userData = {
-      email,
+      email: normalizeEmail(email),
       pass,
       name: name ?? nombre,
       rol,
     };
     const docRef = await this.collection.add(userData);
-    const doc = await docRef.get();
-    return {
-      id: doc.id,
-      ...doc.data(),
+    return { id: docRef.id, ...userData };
+  }
+
+  // Unicidad atómica: el documento de "user_emails" con id = email normalizado
+  // actúa como reserva. Dentro de la transacción solo se pueden leer
+  // DocumentReferences (no Queries), por eso se usa esta colección.
+  async createUnique({ email, pass, name, nombre, rol }) {
+    const normalized = normalizeEmail(email);
+    const userData = {
+      email: normalized,
+      pass,
+      name: name ?? nombre,
+      rol,
     };
+
+    // Cubre cuentas viejas creadas antes de existiera la reserva.
+    if (await User.exists(email)) {
+      const error = new Error('Ya hay un registro con este email');
+      error.status = 409;
+      throw error;
+    }
+
+    return admin.runTransaction(async (transaction) => {
+      const emailRef = admin.collection('user_emails').doc(normalized);
+      const lock = await transaction.get(emailRef);
+      if (lock.exists) {
+        const error = new Error('Ya hay un registro con este email');
+        error.status = 409;
+        throw error;
+      }
+
+      const docRef = this.collection.doc();
+      transaction.set(docRef, userData);
+      transaction.set(emailRef, { userId: docRef.id, createdAt: Date.now() });
+      return { id: docRef.id, ...userData };
+    });
   }
 
   static async getByEmail(email) {
-    const snapshot = await admin
-      .collection('users')
-      .where('email', '==', email)
-      .limit(1)
-      .get();
-    if (snapshot.empty) {
-      return null;
+    for (const candidate of emailCandidates(email)) {
+      const snapshot = await admin
+        .collection('users')
+        .where('email', '==', candidate)
+        .limit(1)
+        .get();
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        return { id: doc.id, ...doc.data() };
+      }
     }
-    const doc = snapshot.docs[0];
-    return {
-      id: doc.id,
-      ...doc.data(),
-    };
+    return null;
+  }
+
+  static async exists(email) {
+    return (await User.getByEmail(email)) !== null;
   }
 
   async login(email, pass) {
@@ -74,7 +120,22 @@ class User {
   }
 
   async update(id, data) {
-    await this.collection.doc(id).update(data);
+    const current = await this.getById(id);
+    const updateData = data.email ? { ...data, email: normalizeEmail(data.email) } : data;
+
+    if (current && updateData.email && updateData.email !== normalizeEmail(current.email)) {
+      const batch = admin.batch();
+      batch.update(this.collection.doc(id), updateData);
+      batch.delete(admin.collection('user_emails').doc(normalizeEmail(current.email)));
+      batch.set(admin.collection('user_emails').doc(updateData.email), {
+        userId: id,
+        createdAt: Date.now(),
+      });
+      await batch.commit();
+    } else {
+      await this.collection.doc(id).update(updateData);
+    }
+
     const doc = await this.collection.doc(id).get();
     if (!doc.exists) {
       return null;
@@ -86,7 +147,13 @@ class User {
   }
 
   async delete(id) {
-    await this.collection.doc(id).delete();
+    const user = await this.getById(id);
+    const batch = admin.batch();
+    batch.delete(this.collection.doc(id));
+    if (user?.email) {
+      batch.delete(admin.collection('user_emails').doc(normalizeEmail(user.email)));
+    }
+    await batch.commit();
     return { id, deleted: true };
   }
 }

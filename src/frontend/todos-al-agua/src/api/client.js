@@ -47,8 +47,21 @@ export const apiAuth = {
   login: (email, password) =>
     request("/users/login", { method: "POST", body: { email, password } }),
   register: (name, email, password) =>
-    request("/users/register", { method: "POST", body: { name, email, password } }),
+    request("/users/register", {
+      method: "POST",
+      body: { name, email: email.trim().toLowerCase(), password },
+    }),
+  emailExists: (email) =>
+    request(`/users/exists?email=${encodeURIComponent(email.trim().toLowerCase())}`),
+  forgotPassword: (email) =>
+    request("/users/forgot-password", { method: "POST", body: { email } }),
+  resetPassword: (token, password) =>
+    request("/users/reset-password", { method: "POST", body: { token, password } }),
   refresh: () => request("/users/refresh", { method: "POST", auth: true }),
+};
+
+export const apiContact = {
+  send: (data) => request("/contact", { method: "POST", body: data }),
 };
 
 export const apiMenu = {

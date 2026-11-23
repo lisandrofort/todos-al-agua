@@ -4,7 +4,8 @@ import Cantina from "../pages/Cantina";
 import Huerta from "../pages/Huerta";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import AuthPlaceholder from "../pages/AuthPlaceholder";
+import RecoverPassword from "../pages/RecoverPassword";
+import ResetPassword from "../pages/ResetPassword";
 import Admin from "../pages/Admin";
 import AdminIndex from "../pages/AdminIndex";
 import UsersPanel from "../components/admin/UsersPanel";
@@ -38,12 +39,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/recuperar",
-    element: (
-      <AuthPlaceholder
-        title="Recuperar contraseña"
-        description="La recuperación de contraseña estará disponible próximamente."
-      />
-    ),
+    element: <RecoverPassword />,
+  },
+  {
+    path: "/restablecer",
+    element: <ResetPassword />,
   },
   {
     path: "/admin",

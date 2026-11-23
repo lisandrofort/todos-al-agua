@@ -12,6 +12,14 @@ userRouter.get('/', middlewareToken, adminOnly, async (req, res) => {
     }
 })
 
+userRouter.get('/exists', async (req, res) => {
+    try {
+        res.json(await userController.emailExists(req.query.email));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
+    }
+})
+
 userRouter.post('/register', async (req, res) => {
     try {
         const { name, password, email } = req.body;
@@ -40,6 +48,24 @@ userRouter.post('/refresh', middlewareToken, (req, res) => {
         res.json({ token: userController.refreshSession(req.dataUser) });
     } catch (e) {
         res.status(500).json({ error: e.message });
+    }
+})
+
+userRouter.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body ?? {};
+        res.json(await userController.requestPasswordReset(email));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
+    }
+})
+
+userRouter.post('/reset-password', async (req, res) => {
+    try {
+        const { token, password } = req.body ?? {};
+        res.json(await userController.resetPassword(token, password));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
     }
 })
 

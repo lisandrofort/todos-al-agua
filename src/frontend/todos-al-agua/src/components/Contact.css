@@ -31,6 +31,70 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.contact-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.contact-form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.contact-form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.contact-form-field input,
+.contact-form-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.contact-form-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.contact-form-field input::placeholder,
+.contact-form-field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.contact-form-field input:focus-visible,
+.contact-form-field textarea:focus-visible {
+  outline: none;
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22);
+}
+
+.contact-form-field [aria-invalid="true"] {
+  border-color: #ffd1d1;
+}
+
+.contact-form-error {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffe0e0;
+}
+
+.contact-form-success {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 @media (max-width: 1000px) {
   .contact-card {
     grid-template-columns: 1fr;

@@ -1,4 +1,5 @@
 import ContactDetails from "../ui/ContactDetails";
+import ContactForm from "./ContactForm";
 import Eyebrow from "../ui/Eyebrow";
 import { ClockIcon, MailIcon, PinIcon } from "../ui/icons";
 import "./Contact.css";
@@ -39,12 +40,10 @@ export default function CantinaContact() {
 
           <ContactDetails
             items={contactItems}
-            action={{
-              href: "mailto:hola@todosalagua.com.ar",
-              label: "Hacer un pedido",
-            }}
             note="También podés acercarte a El Muelle y consultar por la carta del día."
-          />
+          >
+            <ContactForm label="Hacer un pedido" />
+          </ContactDetails>
         </div>
       </div>
     </section>

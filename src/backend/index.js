@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const userRouter = require("./routes/users.js");
 const menuRouter = require("./routes/menu.js");
+const contactRouter = require("./routes/contact.js");
 
 function main() {
   const app = express();
@@ -21,6 +22,7 @@ function main() {
 
   app.use("/users", userRouter);
   app.use("/menu", menuRouter);
+  app.use("/contact", contactRouter);
 
   app.listen(port, () => {
     console.log(`Backend escuchando en http://localhost:${port}`);
