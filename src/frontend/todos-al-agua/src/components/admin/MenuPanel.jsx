@@ -44,12 +44,6 @@ export default function MenuPanel() {
         </span>
       </div>
 
-      {message && (
-        <p className={`admin-message admin-message--${message.type}`}>
-          {message.text}
-        </p>
-      )}
-
       {!puedeEditar && (
         <p className="admin-note">
           Tu cuenta no tiene permiso <code>editar_menu</code>. Podés consultar
@@ -164,6 +158,12 @@ export default function MenuPanel() {
           </button>
         </div>
       </fieldset>
+
+      {message && (
+        <div className={`admin-toast admin-toast--${message.type}`} role="status" aria-live="polite">
+          {message.text}
+        </div>
+      )}
     </section>
   );
 }

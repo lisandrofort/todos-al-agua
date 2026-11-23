@@ -27,6 +27,13 @@ export default function useMenuEditor() {
     });
   }, [selectedIndex]);
 
+  // El mensaje (éxito o error) se limpia solo después de unos segundos.
+  useEffect(() => {
+    if (!message) return undefined;
+    const timer = setTimeout(() => setMessage(null), 3000);
+    return () => clearTimeout(timer);
+  }, [message]);
+
   function updateCategory(index, patch) {
     setDraft((current) =>
       current.map((category, i) =>
@@ -125,7 +132,7 @@ export default function useMenuEditor() {
     setDraft(clone(next));
     setMessage({
       type: "success",
-      text: "Menú guardado. Ya se refleja en /cantina.",
+      text: "✓ Cambios guardados correctamente",
     });
   }
 
