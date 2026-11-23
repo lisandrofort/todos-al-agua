@@ -35,6 +35,14 @@ userRouter.post('/login', async (req, res) => {
     }
 })
 
+userRouter.post('/refresh', middlewareToken, (req, res) => {
+    try {
+        res.json({ token: userController.refreshSession(req.dataUser) });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+})
+
 userRouter.get('/:id', middlewareToken, adminOnly, async (req, res) => {
     try {
         const user = await userController.getUserById(req.params.id);

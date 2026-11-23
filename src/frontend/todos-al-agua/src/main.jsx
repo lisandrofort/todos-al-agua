@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router";
 import UsersProvider from "./data/UsersProvider";
 import AuthProvider from "./auth/AuthProvider";
 import MenuProvider from "./data/MenuProvider";
+import SessionWarning from "./components/SessionWarning";
 import router from "./routes/index.jsx";
 import "./index.css";
 
@@ -12,6 +13,7 @@ createRoot(document.getElementById("root")).render(
     <UsersProvider>
       <AuthProvider>
         <MenuProvider>
+          <SessionWarning />
           <RouterProvider router={router} />
         </MenuProvider>
       </AuthProvider>

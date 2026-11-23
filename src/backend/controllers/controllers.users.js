@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const ROL_POR_DEFECTO = "usuario";
+const DURACION_SESION = "1m";
 
 function publicUser(user) {
   if (!user) return user;
@@ -44,16 +45,32 @@ async function verifyUser(email, password) {
     if (!dataUser) {
       return new Error("El email o contraseña son incorrectos");
     }
-    const payload = {
+    return signSession({
       id: dataUser.id,
       email: dataUser.email,
       name: dataUser.name ?? dataUser.nombre,
       rol: dataUser.rol ?? ROL_POR_DEFECTO,
-    };
-    return jwt.sign(payload, process.env.CANTINA_TOKEN, { expiresIn: "7d" });
+    });
   } catch (e) {
     return new Error(e.message);
   }
+}
+
+function signSession({ id, email, name, rol }) {
+  return jwt.sign(
+    { id, email, name, rol },
+    process.env.CANTINA_TOKEN,
+    { expiresIn: DURACION_SESION },
+  );
+}
+
+function refreshSession(dataUser) {
+  return signSession({
+    id: dataUser.id,
+    email: dataUser.email,
+    name: dataUser.name ?? dataUser.nombre,
+    rol: dataUser.rol ?? ROL_POR_DEFECTO,
+  });
 }
 
 async function getAllUsers() {
@@ -107,6 +124,7 @@ async function encryptWord(pass) {
 module.exports = {
   createUser,
   verifyUser,
+  refreshSession,
   getAllUsers,
   getUserById,
   updateUserById,

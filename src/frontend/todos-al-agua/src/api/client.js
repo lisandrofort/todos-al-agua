@@ -1,5 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
-const TOKEN_KEY = "todos-al-agua.token";
+
+export const TOKEN_KEY = "todos-al-agua.token";
+export const LOGIN_EVENT = "todos-al-agua:login";
+export const SESSION_EXPIRED_EVENT = "todos-al-agua:session-expired";
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -32,6 +35,9 @@ export async function request(path, options = {}) {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
+    if (auth && response.status === 401 && typeof window !== "undefined") {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
     throw new Error(data.error ?? `Error ${response.status}`);
   }
   return data;
@@ -42,6 +48,7 @@ export const apiAuth = {
     request("/users/login", { method: "POST", body: { email, password } }),
   register: (name, email, password) =>
     request("/users/register", { method: "POST", body: { name, email, password } }),
+  refresh: () => request("/users/refresh", { method: "POST", auth: true }),
 };
 
 export const apiMenu = {
