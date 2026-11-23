@@ -8,6 +8,16 @@ export default function UsersProvider({ children }) {
   const [users, setUsers] = useState([]);
 
   function loadUsers() {
+    // El endpoint /users es solo para admin: evitar un 403 innecesario en consola.
+    const token = getToken();
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (payload.rol !== "admin") return;
+    } catch {
+      return;
+    }
+
     apiUsers
       .getAll()
       .then((data) => {

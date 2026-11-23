@@ -42,6 +42,10 @@ export const apiAuth = {
     request("/users/login", { method: "POST", body: { email, password } }),
   register: (name, email, password) =>
     request("/users/register", { method: "POST", body: { name, email, password } }),
+  forgotPassword: (email) =>
+    request("/users/forgot-password", { method: "POST", body: { email } }),
+  resetPassword: (token, password) =>
+    request("/users/reset-password", { method: "POST", body: { token, password } }),
 };
 
 export const apiMenu = {

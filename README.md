@@ -77,7 +77,10 @@ Backend (`src/backend/.env`):
 | `CANTINA_TOKEN` | Secreto para firmar y verificar los JWT |
 | `ROL_ADMIN` | Rol exigido por los endpoints de administración |
 | `PORT` | Puerto del servidor (por defecto, `3000`) |
-| `FRONTEND_URL` | Origen permitido por CORS (opcional; por defecto `*`) |
+| `FRONTEND_URL` | Origen permitido por CORS y base del link de recuperación |
+| `RESEND_API_KEY` | API key de Resend para enviar emails de recuperación |
+| `EMAIL_FROM` | Remitente verificado en Resend |
+| `RESEND_API_URL` | URL de la API de Resend (opcional; por defecto `https://api.resend.com`) |
 
 Frontend (`src/frontend/todos-al-agua/.env`):
 
@@ -105,6 +108,8 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 |---|---|---|---|
 | `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`) |
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
+| `POST` | `/users/forgot-password` | público | Envía por email un link de recuperación (válido 30 min) |
+| `POST` | `/users/reset-password` | público | Cambia la contraseña usando el token del link |
 | `GET` | `/users` | privado | Lista usuarios (sin contraseñas) |
 | `GET` | `/users/:id` | privado | Detalle de un usuario |
 | `PUT` | `/users/:id` | privado | Actualiza datos y rol |
@@ -132,7 +137,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 |---|---|
 | `/`, `/cantina`, `/huerta` | públicas |
 | `/login`, `/registro` | solo invitados |
-| `/recuperar` | pública (próximamente) |
+| `/recuperar`, `/restablecer?token=...` | pública: pedir y completar el cambio de contraseña |
 | `/admin` | requiere acceso al panel → redirige al panel correspondiente |
 | `/admin/usuarios` | permiso `ver_usuarios` |
 | `/admin/menu` | permiso `editar_menu` |

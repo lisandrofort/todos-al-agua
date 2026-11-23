@@ -35,6 +35,24 @@ userRouter.post('/login', async (req, res) => {
     }
 })
 
+userRouter.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body ?? {};
+        res.json(await userController.requestPasswordReset(email));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
+    }
+})
+
+userRouter.post('/reset-password', async (req, res) => {
+    try {
+        const { token, password } = req.body ?? {};
+        res.json(await userController.resetPassword(token, password));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
+    }
+})
+
 userRouter.get('/:id', middlewareToken, adminOnly, async (req, res) => {
     try {
         const user = await userController.getUserById(req.params.id);
