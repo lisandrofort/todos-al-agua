@@ -30,7 +30,7 @@ export default function MenuPanel() {
   } = useMenuEditor();
 
   return (
-    <section className="admin-menu">
+    <section className="admin-menu theme-cantina">
       <div className="admin-menu-intro">
         <div>
           <h2 className="admin-panel-title">Editor del menú</h2>

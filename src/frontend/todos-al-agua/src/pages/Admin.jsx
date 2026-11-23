@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import "../theme.css";
-import "../pages/Cantina.css";
+import "../pages/Home.css";
 import "./Admin.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -25,7 +25,7 @@ export default function Admin() {
   const visibleTabs = TABS.filter((tab) => hasPermission(tab.permiso));
 
   return (
-    <div className="cantina admin-page">
+    <div className="home admin-page">
       <Header
         links={navLinks}
         logoHref="/"

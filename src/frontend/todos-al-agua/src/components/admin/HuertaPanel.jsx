@@ -1,6 +1,6 @@
 export default function HuertaPanel() {
   return (
-    <section>
+    <section className="theme-huerta">
       <h2 className="admin-panel-title">Huerta</h2>
       <p className="admin-panel-copy">
         Este espacio está reservado para administrar los productos y precios de

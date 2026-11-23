@@ -1,4 +1,21 @@
 .admin-page {
+  /* Misma paleta azul del home, reutilizada en el panel */
+  --admin-ink: #123b5e;
+  --admin-accent: var(--color-primary);
+  --admin-accent-dark: #004b91;
+  --admin-accent-bright: #0078b8;
+  --admin-muted: #54626b;
+  --admin-light: #f4f9fc;
+  --admin-sand: #e3edf3;
+  --admin-paper: #ffffff;
+  --admin-line: rgba(0, 85, 165, 0.14);
+  --admin-line-strong: rgba(0, 85, 165, 0.22);
+  --admin-line-active: rgba(0, 85, 165, 0.18);
+  --admin-tint: rgba(0, 168, 232, 0.12);
+  --admin-tint-strong: rgba(0, 168, 232, 0.16);
+  --admin-focus: var(--color-primary);
+  --admin-code-bg: rgba(255, 255, 255, 0.7);
+
   display: flex;
   flex-direction: column;
 }
@@ -7,9 +24,9 @@
   flex: 1;
   padding: 56px 0 80px;
   background:
-    radial-gradient(circle at 10% 10%, rgba(216, 161, 60, 0.16), transparent 40%),
-    radial-gradient(circle at 90% 85%, rgba(184, 92, 56, 0.12), transparent 42%),
-    var(--color-cantina-cream);
+    radial-gradient(circle at 10% 10%, rgba(0, 168, 232, 0.18), transparent 42%),
+    radial-gradient(circle at 90% 85%, rgba(0, 85, 165, 0.14), transparent 44%),
+    var(--color-grey);
 }
 
 .admin-layout {
@@ -23,16 +40,16 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-cantina-terracotta);
+  color: var(--admin-accent-bright);
 }
 
 .admin-page .text-title {
-  color: var(--color-cantina-espresso);
+  color: var(--color-primary);
 }
 
-.cantina .home-nav a.is-active {
-  background: rgba(184, 92, 56, 0.12);
-  color: var(--color-cantina-brown);
+.admin-page .home-nav a.is-active {
+  background: var(--admin-tint);
+  color: var(--admin-accent);
 }
 
 .admin-heading {
@@ -51,11 +68,11 @@
 .admin-subtitle {
   margin-top: 8px;
   font-size: 14px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
 }
 
 .admin-subtitle strong {
-  color: var(--color-cantina-brown);
+  color: var(--admin-accent);
 }
 
 .admin-tabs {
@@ -63,7 +80,7 @@
   flex-wrap: nowrap;
   gap: 8px;
   margin-bottom: 16px;
-  border-bottom: 1px solid rgba(111, 74, 47, 0.14);
+  border-bottom: 1px solid rgba(0, 85, 165, 0.14);
   overflow-x: auto;
   scrollbar-width: thin;
 }
@@ -72,7 +89,7 @@
   flex: 0 0 auto;
   padding: 12px 20px;
   border-bottom: 3px solid transparent;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
@@ -80,33 +97,33 @@
 }
 
 .admin-tab:hover {
-  color: var(--color-cantina-brown);
+  color: var(--admin-accent);
 }
 
 .admin-tab.is-active {
-  color: var(--color-cantina-brown);
-  border-bottom-color: var(--color-cantina-terracotta);
+  color: var(--admin-accent);
+  border-bottom-color: var(--admin-accent-bright);
 }
 
 .admin-panel {
   padding: 28px;
-  border: 1px solid rgba(111, 74, 47, 0.12);
+  border: 1px solid rgba(0, 85, 165, 0.12);
   border-radius: var(--radius-md);
-  background: var(--color-cantina-paper);
-  box-shadow: 0 16px 40px rgba(78, 50, 31, 0.08);
+  background: var(--admin-paper);
+  box-shadow: 0 16px 40px rgba(0, 43, 84, 0.1);
 }
 
 .admin-panel-title {
   margin: 0 0 6px;
   font-size: 22px;
-  color: var(--color-cantina-brown);
+  color: var(--admin-accent);
 }
 
 .admin-panel-copy {
   margin: 0 0 20px;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
 }
 
 .admin-user-cards {
@@ -117,9 +134,9 @@
 
 .admin-user-card {
   padding: 16px;
-  border: 1px solid rgba(111, 74, 47, 0.14);
+  border: 1px solid var(--admin-line);
   border-radius: var(--radius-md);
-  background: var(--color-cantina-light);
+  background: var(--admin-light);
 }
 
 .admin-user-card-head {
@@ -130,7 +147,7 @@
 }
 
 .admin-user-card-head strong {
-  color: var(--color-cantina-espresso);
+  color: var(--admin-ink);
   font-size: 15px;
 }
 
@@ -140,7 +157,7 @@
 
 .admin-user-card-email {
   margin: 8px 0 12px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 13px;
   word-break: break-all;
 }
@@ -157,13 +174,13 @@
   margin: 16px 0 0;
   padding: 12px 16px;
   border-radius: var(--radius-sm);
-  background: rgba(216, 161, 60, 0.16);
-  color: var(--color-cantina-brown-dark);
+  background: var(--admin-tint-strong);
+  color: var(--admin-accent-dark);
   font-size: 13px;
   line-height: 1.5;
 }
 
-.cantina .admin-help-note {
+.admin-page .admin-help-note {
   margin-top: 30px;
 }
 
@@ -180,13 +197,13 @@
 .admin-table th,
 .admin-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid rgba(111, 74, 47, 0.1);
+  border-bottom: 1px solid var(--admin-line);
   text-align: left;
   vertical-align: middle;
 }
 
 .admin-table th {
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -201,15 +218,15 @@
   display: inline-flex;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(184, 92, 56, 0.14);
-  color: var(--color-cantina-brown);
+  background: var(--admin-line);
+  color: var(--admin-accent);
   font-size: 12px;
   font-weight: 700;
 }
 
 .admin-badge--admin {
-  background: rgba(216, 161, 60, 0.22);
-  color: var(--color-cantina-brown-dark);
+  background: rgba(0, 168, 232, 0.22);
+  color: var(--admin-accent-dark);
 }
 
 .admin-permissions {
@@ -219,7 +236,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 12px;
 }
 
@@ -228,17 +245,17 @@
   width: 100%;
   min-height: 38px;
   padding: 8px 10px;
-  border: 1px solid rgba(111, 74, 47, 0.22);
+  border: 1px solid var(--admin-line-strong);
   border-radius: var(--radius-sm);
-  background: var(--color-cantina-paper);
-  color: var(--color-cantina-espresso);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
   font-family: var(--font-family-base);
   font-size: 14px;
 }
 
 .admin-select:focus-visible,
 .admin-input:focus-visible {
-  outline: 3px solid var(--color-cantina-gold);
+  outline: 3px solid var(--admin-focus);
   outline-offset: 2px;
 }
 
@@ -248,7 +265,7 @@
 }
 
 .admin-input::placeholder {
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   opacity: 0.8;
 }
 
@@ -265,12 +282,12 @@
   font-size: 14px;
 }
 
-.cantina .btn-danger {
+.admin-page .btn-danger {
   background: var(--color-danger);
   color: #fff;
 }
 
-.cantina .btn-danger:hover {
+.admin-page .btn-danger:hover {
   background: #9e1f1f;
 }
 
@@ -287,14 +304,14 @@
 }
 
 .admin-message--success {
-  background: rgba(108, 122, 74, 0.14);
-  color: var(--color-cantina-olive);
+  background: var(--admin-tint);
+  color: var(--admin-accent);
 }
 
 .admin-field-label {
   display: block;
   margin-bottom: 4px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -312,8 +329,8 @@
   flex: 0 0 auto;
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(184, 92, 56, 0.12);
-  color: var(--color-cantina-brown);
+  background: var(--admin-tint);
+  color: var(--admin-accent);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -329,14 +346,14 @@
   position: sticky;
   top: 84px;
   padding: 14px;
-  border: 1px solid rgba(111, 74, 47, 0.14);
+  border: 1px solid var(--admin-line);
   border-radius: var(--radius-md);
-  background: var(--color-cantina-light);
+  background: var(--admin-light);
 }
 
 .admin-sidebar-label {
   margin: 0 0 10px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -369,7 +386,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-family: var(--font-family-base);
   font-size: 13px;
   text-align: left;
@@ -377,14 +394,14 @@
 }
 
 .admin-category-item:hover {
-  background: rgba(184, 92, 56, 0.1);
-  color: var(--color-cantina-brown);
+  background: var(--admin-tint);
+  color: var(--admin-accent);
 }
 
 .admin-category-item.is-active {
-  border-color: rgba(111, 74, 47, 0.18);
-  background: rgba(184, 92, 56, 0.12);
-  color: var(--color-cantina-brown);
+  border-color: var(--admin-line-active);
+  background: var(--admin-tint);
+  color: var(--admin-accent);
   font-weight: 700;
 }
 
@@ -399,16 +416,16 @@
   min-width: 24px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: var(--color-cantina-sand);
-  color: var(--color-cantina-muted);
+  background: var(--admin-sand);
+  color: var(--admin-muted);
   font-size: 11px;
   font-weight: 700;
   text-align: center;
 }
 
 .admin-category-item.is-active .admin-category-count {
-  background: var(--color-cantina-terracotta);
-  color: var(--color-cantina-light);
+  background: var(--admin-accent-bright);
+  color: var(--admin-light);
 }
 
 .admin-category-editor {
@@ -421,7 +438,7 @@
   justify-content: space-between;
   gap: 16px;
   padding-bottom: 18px;
-  border-bottom: 1px solid rgba(111, 74, 47, 0.12);
+  border-bottom: 1px solid var(--admin-line);
 }
 
 .admin-editor-fields {
@@ -441,13 +458,13 @@
 
 .admin-items-head h3 {
   margin: 0;
-  color: var(--color-cantina-brown);
+  color: var(--admin-accent);
   font-size: 16px;
 }
 
 .admin-count {
   margin-left: 4px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 13px;
   font-weight: 500;
 }
@@ -483,7 +500,7 @@
 .admin-price-pair label span {
   display: block;
   margin-bottom: 4px;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 11px;
 }
 
@@ -513,9 +530,9 @@
 
 .admin-dish-card {
   padding: 14px;
-  border: 1px solid rgba(111, 74, 47, 0.14);
+  border: 1px solid var(--admin-line);
   border-radius: var(--radius-md);
-  background: var(--color-cantina-light);
+  background: var(--admin-light);
 }
 
 .admin-dish-card-head {
@@ -536,7 +553,7 @@
 
 .admin-dish-card-price {
   padding-top: 10px;
-  border-top: 1px solid rgba(111, 74, 47, 0.1);
+  border-top: 1px solid var(--admin-line);
 }
 
 .admin-dish-card-price .admin-price-pair {
@@ -545,13 +562,13 @@
 
 .admin-empty {
   margin: 0;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   font-size: 14px;
 }
 
 .admin-empty-row {
   padding: 24px !important;
-  color: var(--color-cantina-muted);
+  color: var(--admin-muted);
   text-align: center;
   font-size: 14px;
 }
@@ -560,10 +577,10 @@
   max-width: 640px;
   margin: 0 auto;
   padding: 48px 32px;
-  border: 1px solid rgba(111, 74, 47, 0.12);
+  border: 1px solid rgba(0, 85, 165, 0.12);
   border-radius: var(--radius-md);
-  background: var(--color-cantina-paper);
-  box-shadow: 0 16px 40px rgba(78, 50, 31, 0.08);
+  background: var(--admin-paper);
+  box-shadow: 0 16px 40px rgba(0, 43, 84, 0.1);
 }
 
 .sin-acceso h1 {
@@ -578,8 +595,8 @@
 .sin-acceso code {
   padding: 2px 6px;
   border-radius: 4px;
-  background: var(--color-cantina-sand);
-  color: var(--color-cantina-brown);
+  background: var(--admin-sand);
+  color: var(--admin-accent);
 }
 
 .admin-readonly-fieldset {
@@ -592,8 +609,66 @@
 .admin-note code {
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(255, 251, 245, 0.7);
-  color: var(--color-cantina-brown-dark);
+  background: var(--admin-code-bg);
+  color: var(--admin-accent-dark);
+}
+
+/* La sección Menú comparte la paleta de la Cantina */
+.theme-cantina {
+  --admin-ink: var(--color-cantina-espresso);
+  --admin-accent: var(--color-cantina-brown);
+  --admin-accent-dark: var(--color-cantina-brown-dark);
+  --admin-accent-bright: var(--color-cantina-terracotta);
+  --admin-muted: var(--color-cantina-muted);
+  --admin-light: var(--color-cantina-light);
+  --admin-sand: var(--color-cantina-sand);
+  --admin-paper: var(--color-cantina-paper);
+  --admin-line: rgba(111, 74, 47, 0.14);
+  --admin-line-strong: rgba(111, 74, 47, 0.22);
+  --admin-line-active: rgba(111, 74, 47, 0.18);
+  --admin-tint: rgba(184, 92, 56, 0.12);
+  --admin-tint-strong: rgba(216, 161, 60, 0.16);
+  --admin-focus: var(--color-cantina-gold);
+  --admin-code-bg: rgba(255, 251, 245, 0.7);
+}
+
+/* La sección Huerta comparte la paleta de la Huerta */
+.theme-huerta {
+  --admin-ink: var(--color-huerta-earth-dark);
+  --admin-accent: var(--color-huerta-green);
+  --admin-accent-dark: var(--color-huerta-green-dark);
+  --admin-accent-bright: var(--color-huerta-leaf);
+  --admin-muted: var(--color-huerta-muted);
+  --admin-light: var(--color-huerta-paper);
+  --admin-sand: var(--color-huerta-sand);
+  --admin-paper: var(--color-huerta-paper);
+  --admin-line: rgba(63, 107, 74, 0.14);
+  --admin-line-strong: rgba(63, 107, 74, 0.22);
+  --admin-line-active: rgba(63, 107, 74, 0.18);
+  --admin-tint: rgba(127, 168, 107, 0.16);
+  --admin-tint-strong: rgba(216, 161, 60, 0.16);
+  --admin-focus: var(--color-huerta-gold);
+  --admin-code-bg: rgba(251, 250, 243, 0.7);
+}
+
+.theme-cantina .btn.btn-primary {
+  background: var(--color-cantina-brown);
+  color: var(--color-cantina-light);
+  box-shadow: 0 10px 24px rgba(111, 74, 47, 0.24);
+}
+
+.theme-cantina .btn.btn-primary:hover {
+  background: var(--color-cantina-brown-dark);
+}
+
+.theme-huerta .btn.btn-primary {
+  background: var(--color-huerta-green);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(44, 77, 53, 0.24);
+}
+
+.theme-huerta .btn.btn-primary:hover {
+  background: var(--color-huerta-green-dark);
 }
 
 @media (max-width: 900px) {
@@ -613,7 +688,7 @@
     scrollbar-width: thin;
     background: linear-gradient(
       to right,
-      var(--color-cantina-light) 0%,
+      var(--admin-light) 0%,
       transparent 18px
     );
   }
