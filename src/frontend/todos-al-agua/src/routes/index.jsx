@@ -14,6 +14,7 @@ import HuertaPanel from "../components/admin/HuertaPanel";
 import AyudaPanel from "../components/admin/AyudaPanel";
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
+import NotFound from "../pages/NotFound";
 import { PERMISOS } from "../auth/permissions";
 
 const router = createBrowserRouter([
@@ -74,6 +75,8 @@ const router = createBrowserRouter([
       },
     ],
   },
+  { path: "/404", element: <NotFound /> },
+  { path: "*", element: <NotFound /> },
 ]);
 
 export default router;

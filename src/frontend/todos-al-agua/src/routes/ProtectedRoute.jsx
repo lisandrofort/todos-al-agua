@@ -10,7 +10,7 @@ export default function ProtectedRoute({ requiredPermission }) {
   }
 
   if (requiredPermission && !hasPermission(requiredPermission)) {
-    return <Navigate to="/sin-acceso" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/404" replace state={{ from: location.pathname }} />;
   }
 
   return <Outlet />;
