@@ -55,71 +55,15 @@ html {
   background: var(--color-huerta-sand);
 }
 
-.huerta .home-header {
-  background: rgba(251, 250, 243, 0.94);
-  border-bottom-color: rgba(63, 107, 74, 0.12);
-}
+/* Navbar y footer mantienen el tema visual del Home (Header.css / Footer.css). */
 
-.huerta .brand-mark {
-  background: linear-gradient(145deg, var(--color-huerta-green), var(--color-huerta-earth));
-  box-shadow: 0 8px 18px rgba(63, 107, 74, 0.24);
-}
-
-.huerta .brand-text strong {
-  color: var(--color-huerta-green);
-}
-
-.huerta .brand-text small {
-  color: var(--color-huerta-muted);
-}
-
-.huerta .home-nav a {
-  color: var(--color-huerta-muted);
-}
-
-.huerta .home-nav a:hover,
-.huerta .home-nav a.is-active {
-  background: rgba(63, 107, 74, 0.12);
-  color: var(--color-huerta-green-dark);
-}
-
-.huerta .header-menu-toggle {
-  border-color: rgba(63, 107, 74, 0.16);
-  background: rgba(63, 107, 74, 0.1);
-  color: var(--color-huerta-green);
-}
-
-.huerta .header-mobile-nav {
-  background: rgba(251, 250, 243, 0.98);
-  border-top-color: rgba(63, 107, 74, 0.12);
-}
-
-.huerta .header-mobile-nav a {
-  color: var(--color-huerta-muted);
-}
-
-.huerta .header-mobile-nav a:hover,
-.huerta .header-mobile-nav a.is-active {
-  background: rgba(63, 107, 74, 0.12);
-  color: var(--color-huerta-green-dark);
-}
-
-.huerta .header-mobile-logout {
-  color: var(--color-danger);
-}
-
-.huerta .header-mobile-logout:hover {
-  background: rgba(198, 40, 40, 0.1);
-  color: #9e1f1f;
-}
-
-.huerta .btn.btn-primary {
+.huerta main .btn.btn-primary {
   background: var(--color-huerta-green);
   color: #fff;
   box-shadow: 0 10px 24px rgba(63, 107, 74, 0.24);
 }
 
-.huerta .btn.btn-primary:hover {
+.huerta main .btn.btn-primary:hover {
   background: var(--color-huerta-green-dark);
 }
 
@@ -257,22 +201,7 @@ html {
   color: var(--color-huerta-gold);
 }
 
-.huerta .home-footer {
-  background: var(--color-huerta-earth-dark);
-  color: rgba(251, 250, 243, 0.72);
-}
-
-.huerta .footer-brand {
-  color: var(--color-huerta-paper);
-}
-
-.huerta .footer-brand span {
-  background: linear-gradient(145deg, var(--color-huerta-green), var(--color-huerta-earth));
-}
-
-.huerta .footer-nav a:hover {
-  color: var(--color-huerta-paper);
-}
+/* El footer conserva el tema oscuro del Home. */
 
 @media (max-width: 640px) {
   .huerta .container {
