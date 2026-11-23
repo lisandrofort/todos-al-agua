@@ -1,3 +1,6 @@
 
 # entornos con credenciales
 .env
+
+# archivos del sistema
+.DS_Store

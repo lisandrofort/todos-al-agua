@@ -5,7 +5,6 @@ import Huerta from "../pages/Huerta";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AuthPlaceholder from "../pages/AuthPlaceholder";
-import SinAcceso from "../pages/SinAcceso";
 import Admin from "../pages/Admin";
 import AdminIndex from "../pages/AdminIndex";
 import UsersPanel from "../components/admin/UsersPanel";
@@ -45,10 +44,6 @@ const router = createBrowserRouter([
         description="La recuperación de contraseña estará disponible próximamente."
       />
     ),
-  },
-  {
-    path: "/sin-acceso",
-    element: <SinAcceso />,
   },
   {
     path: "/admin",
