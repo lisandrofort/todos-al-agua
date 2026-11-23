@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuth } from "../auth/AuthContext";
 import "../theme.css";
-import "../pages/Cantina.css";
+import "../pages/Home.css";
 import "../pages/Admin.css";
 
 const navLinks = [
@@ -18,7 +18,7 @@ export default function SinAcceso() {
   const from = location.state?.from;
 
   return (
-    <div className="cantina admin-page">
+    <div className="home admin-page">
       <Header
         links={navLinks}
         logoHref="/"
