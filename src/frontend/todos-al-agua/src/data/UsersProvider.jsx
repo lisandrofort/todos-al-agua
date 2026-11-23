@@ -1,46 +1,42 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { UsersContext } from "./usersContext";
-import { ROLES } from "../auth/permissions";
+import { apiUsers, getToken } from "../api/client";
 
-const STORAGE_KEY = "todos-al-agua.users";
-
-const SEED_USERS = [
-  { id: "u-1", nombre: "María González", email: "admin@todosalagua.com", rol: ROLES.ADMIN },
-  { id: "u-2", nombre: "Carlos Ruiz", email: "carlos.ruiz@gmail.com", rol: ROLES.USUARIO },
-  { id: "u-3", nombre: "Lucía Fernández", email: "lucia.fernandez@gmail.com", rol: ROLES.USUARIO },
-  { id: "u-4", nombre: "Diego Martínez", email: "diego.martinez@gmail.com", rol: ROLES.ADMIN },
-  { id: "u-5", nombre: "Ana López", email: "ana.lopez@gmail.com", rol: ROLES.USUARIO },
-  { id: "u-6", nombre: "Muelle Cantina", email: "cantina@todosalagua.com", rol: ROLES.CANTINA },
-  { id: "u-7", nombre: "Flor de Pan", email: "huerta@todosalagua.com", rol: ROLES.HUERTA },
-];
-
-function readStoredUsers() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return SEED_USERS;
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : SEED_USERS;
-  } catch {
-    return SEED_USERS;
-  }
-}
+const LOGIN_EVENT = "todos-al-agua:login";
 
 export default function UsersProvider({ children }) {
-  const [users, setUsers] = useState(readStoredUsers);
+  const [users, setUsers] = useState([]);
+
+  function loadUsers() {
+    apiUsers
+      .getAll()
+      .then((data) => {
+        if (!Array.isArray(data)) return;
+        setUsers(
+          data.map((u) => ({
+            id: u.id,
+            nombre: u.name ?? u.nombre ?? u.email,
+            email: u.email,
+            rol: u.rol ?? "usuario",
+          })),
+        );
+      })
+      .catch(() => {});
+  }
+
+  useEffect(() => {
+    if (getToken()) loadUsers();
+    window.addEventListener(LOGIN_EVENT, loadUsers);
+    return () => window.removeEventListener(LOGIN_EVENT, loadUsers);
+  }, []);
 
   const updateRole = useCallback((id, rol) => {
-    setUsers((current) => {
-      const next = current.map((user) =>
-        user.id === id ? { ...user, rol } : user,
-      );
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    setUsers((current) =>
+      current.map((user) => (user.id === id ? { ...user, rol } : user)),
+    );
+    apiUsers.update(id, { rol }).catch(() => {});
   }, []);
 
   const value = useMemo(() => ({ users, updateRole }), [users, updateRole]);
-
   return <UsersContext.Provider value={value}>{children}</UsersContext.Provider>;
 }

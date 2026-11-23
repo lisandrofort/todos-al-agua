@@ -1,112 +1,114 @@
 const User = require("../repositories/repository.user.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const ADMIN = process.env.ROL_ADMIN;
 
-function getAllUsers(userRol){
-    if(userRol != ADMIN) {
-        return new Error.message('No tenés roles de administrador');
-    }
-    const repositoryUser = new User();
-    const allUsers = repositoryUser.getAll();
-    return allUsers;
+const ROL_POR_DEFECTO = "usuario";
+
+function publicUser(user) {
+  if (!user) return user;
+  const { pass, encryptedPass, ...safe } = user;
+  return safe;
 }
 
-async function getUserById(id){
-    const repositoryUser = new User();
-    return await repositoryUser.getById(id);
+async function findByEmail(email) {
+  return await User.getByEmail(email);
 }
 
-async function updateUserById(id, data){
-    const repositoryUser = new User();
-    const userFound = await repositoryUser.getById(id);
-    if (!userFound) {
-        return null;
-    }
+async function createUser(name, password, email) {
+  if (!name || !email || !password) {
+    const error = new Error("Faltan datos: nombre, email y contraseña");
+    error.status = 400;
+    throw error;
+  }
 
-    const allowedFields = ["nombre", "email", "rol", "pass"];
-    const updateData = {};
-    allowedFields.forEach((field) => {
-        if (data[field] !== undefined) {
-            updateData[field] = data[field];
-        }
-    });
+  const emailFound = await findByEmail(email);
+  if (emailFound) {
+    const error = new Error("Ya hay un registro con este email");
+    error.status = 409;
+    throw error;
+  }
 
-    if (Object.keys(updateData).length === 0) {
-        const error = new Error("No hay campos válidos para actualizar");
-        error.status = 400;
-        throw error;
-    }
-
-    if (updateData.pass) {
-        updateData.pass = await encryptWord(updateData.pass);
-    }
-
-    return await repositoryUser.update(id, updateData);
+  const pass = await encryptWord(password);
+  const created = await new User().create({
+    name,
+    email,
+    pass,
+    rol: ROL_POR_DEFECTO,
+  });
+  return publicUser(created);
 }
 
-async function deleteUserById(id){
-    const repositoryUser = new User();
-    const userFound = await repositoryUser.getById(id);
-    if (!userFound) {
-        return null;
+async function verifyUser(email, password) {
+  try {
+    const dataUser = await new User().login(email, password);
+    if (!dataUser) {
+      return new Error("El email o contraseña son incorrectos");
     }
-    return await repositoryUser.delete(id);
+    const payload = {
+      id: dataUser.id,
+      email: dataUser.email,
+      name: dataUser.name ?? dataUser.nombre,
+      rol: dataUser.rol ?? ROL_POR_DEFECTO,
+    };
+    return jwt.sign(payload, process.env.CANTINA_TOKEN, { expiresIn: "7d" });
+  } catch (e) {
+    return new Error(e.message);
+  }
 }
 
-async function findByEmail(email){
-    const isFound = User.getByEmail(email);
-    return isFound;
+async function getAllUsers() {
+  const allUsers = await new User().getAll();
+  return allUsers.map(publicUser);
 }
 
-async function createUser(name,password,email,rol){
-    const emailFound = findByEmail(email);
-    if (emailFound) {
-        return new Error("Ya hay un registro con este email");
-    }
-
-    const encryptedPass = encryptWord(password);
-    const userRepository = new User();
-    try {
-        const data = {name,email,encryptedPass,rol};
-        const responseFirebase = await userRepository.create(data);
-        return responseFirebase;
-    } catch (e) {
-        return e.message;
-    }
+async function getUserById(id) {
+  return publicUser(await new User().getById(id));
 }
 
-async function verifyUser(email,password) {
-    const emailFound = findByEmail(email);
+async function updateUserById(id, data) {
+  const userFound = await new User().getById(id);
+  if (!userFound) {
+    return null;
+  }
 
-    const userRepository = new User();
-    const passwordHashed = encryptWord(password);
+  const allowedFields = ["name", "nombre", "email", "rol", "pass"];
+  const updateData = {};
+  allowedFields.forEach((field) => {
+    if (data[field] !== undefined) {
+      updateData[field] = data[field];
+    }
+  });
 
-    try {
-        const dataUser = await userRepository.login(email,passwordHashed);
-        if(dataUser.id){
-            return jwt.sign(
-                dataUser,
-                process.env.CANTINA_TOKEN
-            )
-        }
-    } catch (e) {
-        return e.message;
-    }
-    if (!dataUser || !emailFound) {
-        return new Error("El email o contraseña son incorrectas");
-    }
+  if (Object.keys(updateData).length === 0) {
+    const error = new Error("No hay campos válidos para actualizar");
+    error.status = 400;
+    throw error;
+  }
+
+  if (updateData.pass) {
+    updateData.pass = await encryptWord(updateData.pass);
+  }
+
+  return publicUser(await new User().update(id, updateData));
+}
+
+async function deleteUserById(id) {
+  const userFound = await new User().getById(id);
+  if (!userFound) {
+    return null;
+  }
+  return await new User().delete(id);
 }
 
 async function encryptWord(pass) {
-    const passwordHashed = await bcrypt.hash(pass, 10);
-    return passwordHashed;
+  return await bcrypt.hash(pass, 10);
 }
 
 module.exports = {
-    createUser,
-    getAllUsers,
-    getUserById,
-    updateUserById,
-    deleteUserById
-}
+  createUser,
+  verifyUser,
+  getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+};

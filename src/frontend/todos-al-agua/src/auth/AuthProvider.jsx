@@ -1,49 +1,47 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { permisosDeRol, rolDesdeEmail } from "./permissions";
-import { useUsers } from "../data/usersContext";
+import { permisosDeRol } from "./permissions";
+import { getToken, setToken, apiAuth } from "../api/client";
 
-const STORAGE_KEY = "todos-al-agua.auth";
-
-function readStoredUser() {
+function userFromToken(token) {
+  if (!token) return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return { email: payload.email, rol: payload.rol, name: payload.name, id: payload.id };
   } catch {
     return null;
   }
 }
 
 export default function AuthProvider({ children }) {
-  const { users } = useUsers();
-  const [user, setUser] = useState(readStoredUser);
+  const [user, setUser] = useState(() => userFromToken(getToken()));
+  const [loading, setLoading] = useState(false);
 
-  const login = useCallback(
-    (userData) => {
-      const email = (userData.email ?? "").trim();
-      const matched = users.find(
-        (current) => current.email.toLowerCase() === email.toLowerCase(),
-      );
-      const nextUser = {
-        ...userData,
-        email,
-        rol: matched?.rol ?? rolDesdeEmail(email),
-      };
+  useEffect(() => {
+    if (getToken() && !user) setToken(null);
+  }, [user]);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+  const login = useCallback(async ({ email, password }) => {
+    setLoading(true);
+    try {
+      const { token } = await apiAuth.login(email, password);
+      setToken(token);
+      const nextUser = userFromToken(token);
+      if (!nextUser) throw new Error("No se pudo leer la sesión del servidor");
       setUser(nextUser);
+      window.dispatchEvent(new Event("todos-al-agua:login"));
       return nextUser;
-    },
-    [users],
-  );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    setToken(null);
     setUser(null);
   }, []);
 
   const permissions = useMemo(() => permisosDeRol(user?.rol), [user?.rol]);
-
   const hasPermission = useCallback(
     (permission) => permissions.includes(permission),
     [permissions],
@@ -58,8 +56,9 @@ export default function AuthProvider({ children }) {
       hasPermission,
       login,
       logout,
+      loading,
     }),
-    [user, permissions, hasPermission, login, logout],
+    [user, permissions, hasPermission, login, logout, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
