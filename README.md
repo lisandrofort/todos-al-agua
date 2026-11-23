@@ -151,13 +151,27 @@ Sin sesión, una ruta protegida redirige a `/login`. Con sesión pero sin permis
 ## Flujo de Git
 
 ```bash
-git pull --rebase origin master   # traer cambios de los compañeros
-git add -A
-git commit -m "descripcion del cambio"
-git push origin master
-```
+# 1. Ir a tu rama base y traer lo último de master
+git switch < nombre-rama >
+git pull origin master
 
-Si el push es rechazado por `* [rejected] master -> master (non-fast-forward)`, alguien subió cambios: correr el `pull --rebase` y volver a pushear.
+# 2. Crear y moverte a la rama de la nueva tarea
+git switch -c < feature-nombre-tarea >
+
+# --- (Aquí escribes y guardas tu código) ---
+
+# 3. Guardar tus cambios en la rama de la tarea
+git add .
+git commit -am "feature: descripción de los cambios"
+
+# 4. Volver a < nombre-rama >, traer los cambios de la tarea y subir a GitHub
+git switch < nombre-rama >
+git merge < feature-nombre-tarea >
+git push origin < nombre-rama >
+
+# 5. (Opcional) Borrar la rama temporal ya fusionada
+git branch -d < feature-nombre-tarea >
+```
 
 ## Solución de problemas
 
