@@ -174,3 +174,4 @@ Si el push es rechazado por `* [rejected] master -> master (non-fast-forward)`, 
 - Backend: <https://todos-al-agua-backend.onrender.com>
 - Guía de administrador: <https://guia-de-usuario-administrador.netlify.app>
 - Diseño en Figma: <https://www.figma.com/design/Ek7siuUc9UwbRUtxNRkil8/Untitled?node-id=0-1&t=ccek5bI3gLaGQ1ht-1>
+- Identidad visual en Figma: <https://www.figma.com/design/YeRr4yBr5cPasZIhnWof9Y/Sin-título?node-id=0-1&t=F2A6ESDAazV2Ma9V-1>
