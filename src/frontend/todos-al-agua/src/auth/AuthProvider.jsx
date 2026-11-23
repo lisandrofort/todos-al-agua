@@ -10,11 +10,18 @@ import {
   SESSION_EXPIRED_EVENT,
 } from "../api/client";
 
-const REFRESH_WINDOW_MS = 20 * 1000;
-const WARNING_WINDOW_MS = 10 * 1000;
-const ACTIVITY_THROTTLE_MS = 5 * 1000;
+const INACTIVITY_LIMIT_MS = 60 * 1000;
+const INACTIVITY_WARNING_MS = 50 * 1000;
+const REFRESH_THRESHOLD_MS = 30 * 1000;
+const ACTIVITY_THROTTLE_MS = 1000;
+const LAST_ACTIVITY_KEY = "todos-al-agua.last-activity";
 const ACTIVITY_EVENTS = ["pointerdown", "keydown", "scroll", "visibilitychange"];
 const ACTIVITY_LISTENER_OPTIONS = { passive: true, capture: true };
+
+function readLastActivity() {
+  const stored = Number(localStorage.getItem(LAST_ACTIVITY_KEY));
+  return Number.isFinite(stored) && stored > 0 ? stored : Date.now();
+}
 
 function userFromToken(token) {
   if (!token) return null;
@@ -46,6 +53,7 @@ export default function AuthProvider({ children }) {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const refreshingRef = useRef(false);
+  const lastActivityRef = useRef(readLastActivity());
 
   useEffect(() => {
     if (getToken() && !user) setToken(null);
@@ -54,6 +62,8 @@ export default function AuthProvider({ children }) {
   const expireSession = useCallback(() => {
     setToken(null);
     setUser(null);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    lastActivityRef.current = Date.now();
     setSessionExpired(true);
     setShowWarning(false);
   }, []);
@@ -61,6 +71,8 @@ export default function AuthProvider({ children }) {
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    lastActivityRef.current = Date.now();
     setSessionExpired(false);
     setShowWarning(false);
   }, []);
@@ -68,6 +80,10 @@ export default function AuthProvider({ children }) {
   const refreshSession = useCallback(async () => {
     if (refreshingRef.current) return false;
     refreshingRef.current = true;
+
+    const now = Date.now();
+    lastActivityRef.current = now;
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
 
     try {
       const { token } = await apiAuth.refresh();
@@ -97,6 +113,9 @@ export default function AuthProvider({ children }) {
       const nextUser = userFromToken(token);
       if (!nextUser) throw new Error("No se pudo leer la sesión del servidor");
       setUser(nextUser);
+      const now = Date.now();
+      lastActivityRef.current = now;
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
       setSessionExpired(false);
       setShowWarning(false);
       window.dispatchEvent(new Event(LOGIN_EVENT));
@@ -106,33 +125,10 @@ export default function AuthProvider({ children }) {
     }
   }, []);
 
-  // Cierre exacto cuando vence el JWT (el backend sigue siendo la autoridad).
+  // Actividad real: reinicia el cronómetro de inactividad y renueva el JWT
+  // cuando está por vencer, para que el backend no corte antes del cronómetro.
   useEffect(() => {
-    if (!user?.exp) return undefined;
-
-    const msUntilExpiry = user.exp * 1000 - Date.now();
-    if (msUntilExpiry <= 0) {
-      const timer = setTimeout(expireSession, 0);
-      return () => clearTimeout(timer);
-    }
-
-    const timer = setTimeout(expireSession, msUntilExpiry);
-    return () => clearTimeout(timer);
-  }, [user?.exp, expireSession]);
-
-  // Aviso previo para que el usuario pueda renovar o cerrar.
-  useEffect(() => {
-    if (!user?.exp) return undefined;
-
-    const msUntilWarning = user.exp * 1000 - Date.now() - WARNING_WINDOW_MS;
-    const delay = msUntilWarning > 0 ? msUntilWarning : 0;
-    const timer = setTimeout(() => setShowWarning(true), delay);
-    return () => clearTimeout(timer);
-  }, [user?.exp]);
-
-  // Renovación por actividad real: si no hay actividad, el token vence solo.
-  useEffect(() => {
-    if (!user?.exp) return undefined;
+    if (!user) return undefined;
 
     let lastHandled = 0;
 
@@ -145,8 +141,20 @@ export default function AuthProvider({ children }) {
       if (now - lastHandled < ACTIVITY_THROTTLE_MS) return;
       lastHandled = now;
 
-      if (user.exp * 1000 - now <= REFRESH_WINDOW_MS) {
-        await refreshSession();
+      lastActivityRef.current = now;
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
+      setShowWarning(false);
+
+      try {
+        const token = getToken();
+        if (!token) return;
+        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(base64));
+        if (payload.exp * 1000 - now < REFRESH_THRESHOLD_MS) {
+          await refreshSession();
+        }
+      } catch {
+        // Token ilegible: sigue rigiendo el cronómetro y el backend validará.
       }
     }
 
@@ -161,7 +169,30 @@ export default function AuthProvider({ children }) {
         target.removeEventListener(type, handleActivity, ACTIVITY_LISTENER_OPTIONS);
       });
     };
-  }, [user?.exp, refreshSession]);
+  }, [user, refreshSession]);
+
+  // Cronómetro de inactividad: aviso a los 50 s y cierre a los 60 s.
+  useEffect(() => {
+    if (!user) return undefined;
+
+    // Si venimos de una sesión anterior (pestaña recargada), arrancamos de cero.
+    if (Date.now() - lastActivityRef.current >= INACTIVITY_LIMIT_MS) {
+      const now = Date.now();
+      lastActivityRef.current = now;
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
+    }
+
+    const timer = setInterval(() => {
+      const idleMs = Date.now() - lastActivityRef.current;
+      if (idleMs >= INACTIVITY_LIMIT_MS) {
+        expireSession();
+      } else if (idleMs >= INACTIVITY_WARNING_MS) {
+        setShowWarning(true);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [user, expireSession]);
 
   // Un 401 en cualquier petición autenticada cierra la sesión en todo el frontend.
   useEffect(() => {
@@ -176,6 +207,14 @@ export default function AuthProvider({ children }) {
   // Mantener pestañas sincronizadas (login, refresh y logout).
   useEffect(() => {
     function handleStorage(event) {
+      if (event.key === LAST_ACTIVITY_KEY) {
+        const value = Number(event.newValue);
+        if (Number.isFinite(value) && value > 0) {
+          lastActivityRef.current = value;
+        }
+        return;
+      }
+
       if (event.key !== TOKEN_KEY) return;
 
       const nextUser = userFromToken(event.newValue);

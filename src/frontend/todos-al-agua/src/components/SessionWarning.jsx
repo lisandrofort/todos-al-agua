@@ -18,7 +18,7 @@ export default function SessionWarning() {
         <span className="session-warning-icon" aria-hidden="true">⏱</span>
         <h2 id="session-warning-title">¿Seguís ahí?</h2>
         <p id="session-warning-description">
-          Tu sesión se cierra por inactividad en los próximos 2 minutos.
+          Tu sesión se cierra por inactividad en unos segundos.
         </p>
         <div className="session-warning-actions">
           <button className="session-warning-btn session-warning-btn-primary" type="button" onClick={extendSession}>
