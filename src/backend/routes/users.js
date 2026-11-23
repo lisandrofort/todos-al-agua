@@ -57,7 +57,7 @@ userRouter.get('/:id', middlewareToken, adminOnly, async (req, res) => {
 
 userRouter.put('/:id', middlewareToken, adminOnly, async (req, res) => {
     try {
-        const user = await userController.updateUserById(req.params.id, req.body ?? {});
+        const user = await userController.updateUserById(req.params.id, req.body ?? {}, req.dataUser);
         if (!user) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
@@ -69,7 +69,7 @@ userRouter.put('/:id', middlewareToken, adminOnly, async (req, res) => {
 
 userRouter.delete('/:id', middlewareToken, adminOnly, async (req, res) => {
     try {
-        const deleted = await userController.deleteUserById(req.params.id);
+        const deleted = await userController.deleteUserById(req.params.id, req.dataUser);
         if (!deleted) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }

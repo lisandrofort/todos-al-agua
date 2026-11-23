@@ -125,6 +125,8 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 - Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña), con vencimiento de **1 minuto de inactividad**. La actividad del usuario (clicks, teclas, scroll, cambio de pestaña) renueva el token cuando quedan menos de 20 segundos; si no hay actividad, la sesión se cierra y `/login` muestra un aviso. A los 10 segundos del vencimiento aparece un diálogo para “Seguir conectado” o “Cerrar sesión”. La sesión también se sincroniza entre pestañas.
 - El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles los cambia un administrador desde `/admin/usuarios`.
 - Roles: `admin` (todo), `cantina` (panel + editar menú), `huerta` (panel + editar huerta), `usuario` (sin acceso al panel).
+- Un administrador **no puede modificar ni eliminar a otro administrador** (ni su rol, email, nombre o contraseña). Tampoco puede cambiar su propio rol ni eliminarse a sí mismo. Estas reglas se validan en el backend y se reflejan en el panel deshabilitando el selector de rol para cuentas admin.
+- No se puede degradar ni eliminar al **último administrador** restante.
 - El frontend guarda el token en `localStorage` bajo `todos-al-agua.token`, lo decodifica para obtener el rol y calcula los permisos desde `src/auth/permissions.js`.
 
 ## Rutas

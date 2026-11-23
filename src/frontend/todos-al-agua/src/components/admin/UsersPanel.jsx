@@ -16,19 +16,15 @@ const ROLES_DISPONIBLES = [
 
 export default function UsersPanel() {
   const { users, updateRole } = useUsers();
-  const { user, hasPermission, logout } = useAuth();
+  const { user, hasPermission } = useAuth();
   const puedeEditarRoles = hasPermission(PERMISOS.EDITAR_ROLES);
 
+  function puedeCambiarRol(current) {
+    return puedeEditarRoles && current.rol !== ROLES.ADMIN;
+  }
+
   function handleRoleChange(id, nextRol) {
-    const target = users.find((current) => current.id === id);
     updateRole(id, nextRol);
-
-    const isCurrentUser =
-      target?.email.toLowerCase() === user?.email?.toLowerCase();
-
-    if (isCurrentUser && !permisosDeRol(nextRol).includes(PERMISOS.ACCESO_ADMIN)) {
-      logout();
-    }
   }
 
   return (
@@ -91,7 +87,7 @@ export default function UsersPanel() {
                     </ul>
                   </td>
                   <td>
-                    {puedeEditarRoles ? (
+                    {puedeCambiarRol(current) ? (
                       <select
                         className="admin-select"
                         aria-label={`Rol de ${current.nombre}`}
@@ -107,7 +103,9 @@ export default function UsersPanel() {
                         ))}
                       </select>
                     ) : (
-                      <span className="admin-badge">Sin permiso</span>
+                      <span className="admin-badge" title="Los roles de administrador no se pueden modificar">
+                        No editable
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -159,7 +157,7 @@ export default function UsersPanel() {
 
               <label className="admin-user-card-role">
                 <span className="admin-field-label">Cambiar rol</span>
-                {puedeEditarRoles ? (
+                {puedeCambiarRol(current) ? (
                   <select
                     className="admin-select"
                     aria-label={`Rol de ${current.nombre}`}
@@ -175,7 +173,9 @@ export default function UsersPanel() {
                     ))}
                   </select>
                 ) : (
-                  <span className="admin-badge">Sin permiso</span>
+                  <span className="admin-badge" title="Los roles de administrador no se pueden modificar">
+                    No editable
+                  </span>
                 )}
               </label>
             </article>
@@ -184,8 +184,8 @@ export default function UsersPanel() {
       </div>
 
       <p className="admin-note">
-        Si cambiás tu propio rol y perdés el acceso al panel, se cierra la
-        sesión automáticamente.
+        Los roles de administrador no se pueden modificar entre sí. Tampoco
+        podés cambiar tu propio rol ni eliminar tu cuenta.
       </p>
     </section>
   );

@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const ROL_POR_DEFECTO = "usuario";
+const ROL_ADMIN = process.env.ROL_ADMIN ?? "admin";
 const DURACION_SESION = "1m";
 
 function publicUser(user) {
@@ -82,10 +83,47 @@ async function getUserById(id) {
   return publicUser(await new User().getById(id));
 }
 
-async function updateUserById(id, data) {
+function esMismoUsuario(target, actor) {
+  if (!actor) return false;
+  if (target.id != null && actor.id != null) {
+    return String(target.id) === String(actor.id);
+  }
+  return target.email?.toLowerCase() === actor.email?.toLowerCase();
+}
+
+async function contarAdministradores() {
+  const users = await new User().getAll();
+  return users.filter((user) => (user.rol ?? ROL_POR_DEFECTO) === ROL_ADMIN).length;
+}
+
+function error403(mensaje) {
+  const error = new Error(mensaje);
+  error.status = 403;
+  return error;
+}
+
+async function updateUserById(id, data, actor) {
   const userFound = await new User().getById(id);
   if (!userFound) {
     return null;
+  }
+
+  const esAdmin = (userFound.rol ?? ROL_POR_DEFECTO) === ROL_ADMIN;
+  const esUnoMismo = esMismoUsuario(userFound, actor);
+
+  if (esUnoMismo && data.rol !== undefined) {
+    throw error403("No podés cambiar tu propio rol");
+  }
+
+  if (esAdmin && !esUnoMismo) {
+    throw error403("No podés modificar a otro administrador");
+  }
+
+  if (esAdmin && data.rol !== undefined && data.rol !== ROL_ADMIN) {
+    const totalAdmins = await contarAdministradores();
+    if (totalAdmins <= 1) {
+      throw error403("No podés quitarle el rol al último administrador");
+    }
   }
 
   const allowedFields = ["name", "nombre", "email", "rol", "pass"];
@@ -109,11 +147,27 @@ async function updateUserById(id, data) {
   return publicUser(await new User().update(id, updateData));
 }
 
-async function deleteUserById(id) {
+async function deleteUserById(id, actor) {
   const userFound = await new User().getById(id);
   if (!userFound) {
     return null;
   }
+
+  const esAdmin = (userFound.rol ?? ROL_POR_DEFECTO) === ROL_ADMIN;
+
+  if (esMismoUsuario(userFound, actor)) {
+    throw error403("No podés eliminar tu propia cuenta");
+  }
+
+  if (esAdmin) {
+    const totalAdmins = await contarAdministradores();
+    const mensaje =
+      totalAdmins <= 1
+        ? "No podés eliminar al último administrador"
+        : "No podés eliminar a otro administrador";
+    throw error403(mensaje);
+  }
+
   return await new User().delete(id);
 }
 
