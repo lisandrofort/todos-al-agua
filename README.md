@@ -107,7 +107,8 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
-| `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`) |
+| `POST` | `/users/register` | público | Crea usuario (siempre con rol `usuario`); rechaza emails duplicados con 409 |
+| `GET` | `/users/exists?email=...` | público | Indica si el email ya está registrado (para el chequeo en vivo) |
 | `POST` | `/users/login` | público | Verifica contraseña y devuelve `{ token }` |
 | `POST` | `/users/refresh` | privado | Renueva el JWT por otros 1 minuto de inactividad |
 | `POST` | `/users/forgot-password` | público | Envía por email un link de recuperación (válido 30 min) |

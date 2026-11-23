@@ -12,6 +12,14 @@ userRouter.get('/', middlewareToken, adminOnly, async (req, res) => {
     }
 })
 
+userRouter.get('/exists', async (req, res) => {
+    try {
+        res.json(await userController.emailExists(req.query.email));
+    } catch (e) {
+        res.status(e.status || 500).json({ error: e.message });
+    }
+})
+
 userRouter.post('/register', async (req, res) => {
     try {
         const { name, password, email } = req.body;

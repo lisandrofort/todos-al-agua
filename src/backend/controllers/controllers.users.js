@@ -27,21 +27,23 @@ async function createUser(name, password, email) {
     throw error;
   }
 
-  const emailFound = await findByEmail(email);
-  if (emailFound) {
-    const error = new Error("Ya hay un registro con este email");
-    error.status = 409;
-    throw error;
-  }
-
   const pass = await encryptWord(password);
-  const created = await new User().create({
+  const created = await new User().createUnique({
     name,
     email,
     pass,
     rol: ROL_POR_DEFECTO,
   });
   return publicUser(created);
+}
+
+async function emailExists(email) {
+  if (!email || !String(email).trim()) {
+    const error = new Error("Ingresá un email");
+    error.status = 400;
+    throw error;
+  }
+  return { exists: await User.exists(email) };
 }
 
 async function verifyUser(email, password) {
@@ -191,6 +193,7 @@ async function encryptWord(pass) {
 
 module.exports = {
   createUser,
+  emailExists,
   verifyUser,
   refreshSession,
   getAllUsers,

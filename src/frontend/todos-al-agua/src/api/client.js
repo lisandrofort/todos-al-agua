@@ -47,7 +47,12 @@ export const apiAuth = {
   login: (email, password) =>
     request("/users/login", { method: "POST", body: { email, password } }),
   register: (name, email, password) =>
-    request("/users/register", { method: "POST", body: { name, email, password } }),
+    request("/users/register", {
+      method: "POST",
+      body: { name, email: email.trim().toLowerCase(), password },
+    }),
+  emailExists: (email) =>
+    request(`/users/exists?email=${encodeURIComponent(email.trim().toLowerCase())}`),
   forgotPassword: (email) =>
     request("/users/forgot-password", { method: "POST", body: { email } }),
   resetPassword: (token, password) =>

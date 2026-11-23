@@ -1,3 +1,9 @@
 .register-form {
   gap: 16px;
 }
+
+.register-email-ok {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-huerta-green);
+}
