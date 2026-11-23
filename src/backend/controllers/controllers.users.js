@@ -95,6 +95,12 @@ async function updateUserById(id, data) {
     return null;
   }
 
+  if (data.rol !== undefined && userFound.rol === "admin") {
+    const error = new Error("No se puede modificar el rol de un administrador");
+    error.status = 403;
+    throw error;
+  }
+
   const allowedFields = ["name", "nombre", "email", "rol", "pass"];
   const updateData = {};
   allowedFields.forEach((field) => {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import {
   ETIQUETAS_PERMISO,
@@ -18,10 +19,18 @@ export default function UsersPanel() {
   const { users, updateRole } = useUsers();
   const { user, hasPermission, logout } = useAuth();
   const puedeEditarRoles = hasPermission(PERMISOS.EDITAR_ROLES);
+  const [error, setError] = useState("");
 
-  function handleRoleChange(id, nextRol) {
+  async function handleRoleChange(id, nextRol) {
+    setError("");
     const target = users.find((current) => current.id === id);
-    updateRole(id, nextRol);
+
+    try {
+      await updateRole(id, nextRol);
+    } catch (cause) {
+      setError(cause.message);
+      return;
+    }
 
     const isCurrentUser =
       target?.email.toLowerCase() === user?.email?.toLowerCase();
@@ -37,6 +46,16 @@ export default function UsersPanel() {
       <p className="admin-panel-copy">
         Cada rol define a qué secciones puede acceder dentro del panel.
       </p>
+
+      {error && (
+        <p
+          className="admin-panel-copy"
+          role="alert"
+          style={{ color: "var(--color-danger)", fontWeight: 600 }}
+        >
+          {error}
+        </p>
+      )}
 
       <div className="admin-table-wrap admin-table-desktop">
         <table className="admin-table">
@@ -91,7 +110,9 @@ export default function UsersPanel() {
                     </ul>
                   </td>
                   <td>
-                    {puedeEditarRoles ? (
+                    {current.rol === ROLES.ADMIN ? (
+                      <span className="admin-badge">Rol protegido</span>
+                    ) : puedeEditarRoles ? (
                       <select
                         className="admin-select"
                         aria-label={`Rol de ${current.nombre}`}
@@ -159,7 +180,9 @@ export default function UsersPanel() {
 
               <label className="admin-user-card-role">
                 <span className="admin-field-label">Cambiar rol</span>
-                {puedeEditarRoles ? (
+                {current.rol === ROLES.ADMIN ? (
+                  <span className="admin-badge">Rol protegido</span>
+                ) : puedeEditarRoles ? (
                   <select
                     className="admin-select"
                     aria-label={`Rol de ${current.nombre}`}
@@ -184,8 +207,8 @@ export default function UsersPanel() {
       </div>
 
       <p className="admin-note">
-        Si cambiás tu propio rol y perdés el acceso al panel, se cierra la
-        sesión automáticamente.
+        Los roles de administrador están protegidos: no se pueden modificar
+        desde el panel.
       </p>
     </section>
   );

@@ -40,11 +40,12 @@ export default function UsersProvider({ children }) {
     return () => window.removeEventListener(LOGIN_EVENT, loadUsers);
   }, []);
 
-  const updateRole = useCallback((id, rol) => {
+  const updateRole = useCallback(async (id, rol) => {
+    // Esperamos a la API: si falla, la tabla nunca miente sobre el rol.
+    await apiUsers.update(id, { rol });
     setUsers((current) =>
       current.map((user) => (user.id === id ? { ...user, rol } : user)),
     );
-    apiUsers.update(id, { rol }).catch(() => {});
   }, []);
 
   const value = useMemo(() => ({ users, updateRole }), [users, updateRole]);

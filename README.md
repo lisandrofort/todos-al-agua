@@ -131,7 +131,7 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 ## Autenticación y roles
 
 - Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña). El frontend lleva un **cronómetro de inactividad de 60 segundos**: a los 50 s aparece un diálogo *"¿Seguís ahí?"* para seguir conectado o cerrar sesión, y a los 60 s sin interacción la sesión se cierra y `/login` muestra un aviso. Cualquier click, tecla, scroll o cambio de pestaña reinicia el cronómetro y renueva el JWT cuando está por vencer. El cronómetro se sincroniza entre pestañas.
-- El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles los cambia un administrador desde `/admin/usuarios`.
+- El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles de `usuario`, `cantina` y `huerta` los cambia un administrador desde `/admin/usuarios`. Los roles `admin` están protegidos: la API responde 403 y el panel no muestra el selector para modificarlos.
 - Roles: `admin` (todo), `cantina` (panel + editar menú), `huerta` (panel + editar huerta), `usuario` (sin acceso al panel).
 - El frontend guarda el token en `localStorage` bajo `todos-al-agua.token`, lo decodifica para obtener el rol y calcula los permisos desde `src/auth/permissions.js`.
 
