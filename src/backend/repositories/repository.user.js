@@ -31,17 +31,6 @@ class User {
     return users;
   }
 
-  async create({ email, pass, name, nombre, rol }) {
-    const userData = {
-      email: normalizeEmail(email),
-      pass,
-      name: name ?? nombre,
-      rol,
-    };
-    const docRef = await this.collection.add(userData);
-    return { id: docRef.id, ...userData };
-  }
-
   // Unicidad atómica: el documento de "user_emails" con id = email normalizado
   // actúa como reserva. Dentro de la transacción solo se pueden leer
   // DocumentReferences (no Queries), por eso se usa esta colección.

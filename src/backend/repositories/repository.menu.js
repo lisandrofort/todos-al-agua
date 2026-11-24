@@ -1,14 +1,9 @@
 const { admin } = require('../lib/firebase');
-const menu = require("./data.json")
 
 class Menu {
   constructor() {
     this.db = admin;
     this.collection = this.db.collection('menu');
-  }
-
-  getAllLocal() {
-    return menu;
   }
 
   async getAll() {

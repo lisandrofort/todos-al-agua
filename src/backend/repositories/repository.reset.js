@@ -53,4 +53,4 @@ async function invalidateForUser(userId) {
   );
 }
 
-module.exports = { create, findValid, markUsed, invalidateForUser, hashToken };
+module.exports = { create, findValid, markUsed, invalidateForUser };

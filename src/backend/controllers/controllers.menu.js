@@ -18,35 +18,6 @@ async function getFullMenu() {
     return await allMenu.getAll()
 }
 
-async function getDishByName(name) {
-    const allMenu = await getFullMenu()
-    const search = normalize(name)
-    const found = []
-    allMenu.forEach((category) => {
-        const items = category.items ?? []
-        items.forEach((item) => {
-            if (normalize(item.nombre) === search) {
-                found.push({ categoria: category.categoria, categoriaId: category.id, ...item })
-            }
-        })
-    })
-    return found
-}
-
-async function getDishByPrice(price) {
-    const allMenu = await getFullMenu()
-    const found = []
-    allMenu.forEach((category) => {
-        const items = category.items ?? []
-        items.forEach((item) => {
-            if (item.precio === price || item.precios?.chica === price || item.precios?.grande === price) {
-                found.push({ categoria: category.categoria, categoriaId: category.id, ...item })
-            }
-        })
-    })
-    return found
-}
-
 async function getDishByCategory(category) {
     const allMenu = await getFullMenu()
     const search = normalize(category)
@@ -195,8 +166,6 @@ async function deleteItem(id, itemName) {
 
 module.exports = {
     getFullMenu,
-    getDishByName,
-    getDishByPrice,
     getDishByCategory,
     getDishById,
     createCategory,
