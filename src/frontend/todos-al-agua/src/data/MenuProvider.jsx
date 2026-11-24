@@ -7,7 +7,6 @@ const ORIGINAL_MENU = menuData.menu;
 
 export default function MenuProvider({ children }) {
   const [menu, setMenu] = useState(ORIGINAL_MENU);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -16,10 +15,7 @@ export default function MenuProvider({ children }) {
       .then((data) => {
         if (active && Array.isArray(data) && data.length) setMenu(data);
       })
-      .catch(() => {})
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+      .catch(() => {});
     return () => {
       active = false;
     };
@@ -39,8 +35,8 @@ export default function MenuProvider({ children }) {
   const resetMenu = useCallback(() => setMenu(ORIGINAL_MENU), []);
 
   const value = useMemo(
-    () => ({ menu, saveMenu, resetMenu, loading }),
-    [menu, saveMenu, resetMenu, loading],
+    () => ({ menu, saveMenu, resetMenu }),
+    [menu, saveMenu, resetMenu],
   );
   return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 }

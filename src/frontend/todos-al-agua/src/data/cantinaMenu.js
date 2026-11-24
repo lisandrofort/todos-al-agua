@@ -1,7 +1,3 @@
-import data from "./menu.json";
-
-export const menu = data.menu;
-
 export const featuredCategories = [
   {
     categoria: "Pastas",
