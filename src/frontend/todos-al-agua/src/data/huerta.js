@@ -1,5 +1,3 @@
-export const huertaName = "Huerta Todos al Agua";
-
 export const categories = [
   {
     categoria: "Plantines de estación",

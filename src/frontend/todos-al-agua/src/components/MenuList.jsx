@@ -1,4 +1,4 @@
-import { formatPrice } from "../data/cantinaMenu";
+import { formatPrice } from "../utils/formatPrice";
 import { useMenu } from "../data/menuContext";
 import SectionHeading from "../ui/SectionHeading";
 import "./MenuList.css";

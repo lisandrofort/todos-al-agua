@@ -1,7 +1,4 @@
 import data from "./menu.json";
-import { formatPrice } from "../utils/formatPrice";
-
-export const cantinaName = data.restaurante;
 
 export const menu = data.menu;
 
@@ -39,6 +36,4 @@ export const featuredCategories = [
     tone: "primary",
   },
 ];
-
-export { formatPrice };
 
