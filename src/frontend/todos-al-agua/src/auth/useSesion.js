@@ -9,21 +9,35 @@ const RENOVAR_MS = 30 * 1000;
 // Se lo llama desde AuthProvider con el usuario y las funciones de sesión.
 export function useSesion({ user, setUser, logout, setSessionExpired }) {
   const ultimaActividad = useRef(0);
+  const sesionIniciada = useRef(false);
   const [mostrarAviso, setMostrarAviso] = useState(false);
 
-  // Extender la sesión: pide un token nuevo y resetea el contador.
-  const extendSession = useCallback(async () => {
+  // Renovar el JWT: NO toca el cronómetro (es automático, no actividad).
+  const renovarToken = useCallback(async () => {
     const { token } = await apiAuth.refresh();
     setToken(token);
     const payload = JSON.parse(atob(token.split(".")[1]));
     setUser(payload);
-    ultimaActividad.current = Date.now();
-    setMostrarAviso(false);
   }, [setUser]);
 
-  // Al arrancar, marcamos "ahora" como última actividad.
-  useEffect(() => {
+  // Extender desde el botón: renueva y SÍ resetea el contador.
+  const extendSession = useCallback(async () => {
+    await renovarToken();
     ultimaActividad.current = Date.now();
+    setMostrarAviso(false);
+  }, [renovarToken]);
+
+  // Al arrancar la sesión, marcamos "ahora" como última actividad.
+  useEffect(() => {
+    if (!user) {
+      sesionIniciada.current = false;
+      return;
+    }
+    if (sesionIniciada.current) {
+      return;
+    }
+    ultimaActividad.current = Date.now();
+    sesionIniciada.current = true;
   }, [user]);
 
   // Renovar el token cuando está por vencer.
@@ -36,7 +50,7 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
       const tiempoRestante = user.exp * 1000 - Date.now();
       if (tiempoRestante < RENOVAR_MS) {
         try {
-          await extendSession();
+          await renovarToken();
         } catch {
           // si falla, el cronómetro sigue rigiendo
         }
@@ -44,7 +58,7 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
     }, 5000);
 
     return () => clearInterval(id);
-  }, [user, extendSession]);
+  }, [user, renovarToken]);
 
   // Escuchar actividad del usuario para reiniciar el contador.
   useEffect(() => {
@@ -78,8 +92,9 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
       const tiempoInactivo = Date.now() - ultimaActividad.current;
 
       if (tiempoInactivo >= CIERRE_MS) {
-        setSessionExpired(true);
+        // Primero cerramos la sesión y después avisamos (para que no se borre).
         logout();
+        setSessionExpired(true);
       } else if (tiempoInactivo >= AVISO_MS) {
         setMostrarAviso(true);
       }
