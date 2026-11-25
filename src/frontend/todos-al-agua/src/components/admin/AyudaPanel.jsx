@@ -21,11 +21,6 @@ export default function AyudaPanel() {
           Abrir guía de administración
         </Button>
       </div>
-
-      <p className="admin-note admin-help-note">
-        La guía se abre en una pestaña nueva. Si el enlace no funciona, configurá
-        la variable <code>VITE_GUIA_ADMIN_URL</code> con la URL donde esté publicada.
-      </p>
     </section>
   );
 }
