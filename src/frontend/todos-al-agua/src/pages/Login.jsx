@@ -14,13 +14,32 @@ const navLinks = [
   { href: "/huerta", label: "Huerta" },
 ];
 
+// Dice si el email tiene forma válida: un "@", usuario y dominio con punto.
+function esEmailValido(email) {
+  const emailLimpio = email.trim();
+  const partes = emailLimpio.split("@");
+
+  // Debe tener exactamente un "@", algo antes, y un "." en la parte del dominio
+  if (partes.length !== 2) return false;
+  const [usuario, dominio] = partes;
+
+  return (
+    usuario.length > 0 &&
+    !usuario.includes(" ") &&
+    dominio.includes(".") &&
+    !dominio.startsWith(".") &&
+    !dominio.endsWith(".") &&
+    !dominio.includes(" ")
+  );
+}
+
 // Revisa que email y contraseña estén bien escritos.
 function validate(values) {
   const errors = {};
 
   if (!values.email.trim()) {
     errors.email = "Ingresá tu email.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
+  } else if (!esEmailValido(values.email)) {
     errors.email = "Ingresá un email válido.";
   }
 
