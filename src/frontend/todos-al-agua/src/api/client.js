@@ -10,7 +10,7 @@ export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-// Guarda el token. Si no hay token, lo borra.
+// Guarda el token. Si no hay token, lo descarta.
 export function setToken(token) {
   if (!token) {
     localStorage.removeItem(TOKEN_KEY);
@@ -76,12 +76,22 @@ export async function request(ruta, metodo, datos, necesitaToken) {
 
 // Login, registro y recuperación.
 export const apiAuth = {
-  login: (email, password) => request("/users/login", "POST", { email, password }),
+  login: (email, password) =>
+    request("/users/login", "POST", { email, password }),
   register: (name, email, password) =>
-    request("/users/register", "POST", { name, email: email.trim().toLowerCase(), password }),
-  emailExists: (email) => request("/users/exists?email=" + encodeURIComponent(email.trim().toLowerCase())),
-  forgotPassword: (email) => request("/users/forgot-password", "POST", { email }),
-  resetPassword: (token, password) => request("/users/reset-password", "POST", { token, password }),
+    request("/users/register", "POST", {
+      name,
+      email: email.trim().toLowerCase(),
+      password,
+    }),
+  emailExists: (email) =>
+    request(
+      "/users/exists?email=" + encodeURIComponent(email.trim().toLowerCase()),
+    ),
+  forgotPassword: (email) =>
+    request("/users/forgot-password", "POST", { email }),
+  resetPassword: (token, password) =>
+    request("/users/reset-password", "POST", { token, password }),
   refresh: () => request("/users/refresh", "POST", null, true),
 };
 

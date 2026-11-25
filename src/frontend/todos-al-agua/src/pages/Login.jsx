@@ -4,7 +4,8 @@ import "../theme.css";
 import "./Login.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Logo from "../ui/Logo";
+import LoginIntro from "../components/LoginIntro";
+import LoginMessages from "../components/LoginMessages";
 import { useAuth } from "../auth/AuthContext";
 
 const navLinks = [
@@ -13,6 +14,7 @@ const navLinks = [
   { href: "/huerta", label: "Huerta" },
 ];
 
+// Revisa que email y contraseña estén bien escritos.
 function validate(values) {
   const errors = {};
 
@@ -35,23 +37,23 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, login, logout, sessionExpired } = useAuth();
+
   const registered = location.state?.registered;
   const recovered = location.state?.recovered;
   const needsAdmin = Boolean(location.state?.from) && user && user.rol !== "admin";
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Guarda lo que el usuario escribe en el formulario.
   function handleChange(event) {
-    const { name, value, type, checked } = event.target;
-
-    setForm((current) => ({
-      ...current,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    setErrors((current) => ({ ...current, [name]: "" }));
+    const { name, value } = event.target;
+    setForm((actual) => ({ ...actual, [name]: value }));
+    setErrors({});
   }
 
+  // Al apretar "Ingresar": valida, llama al login y navega.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -63,7 +65,6 @@ export default function Login() {
     }
 
     setSubmitting(true);
-    setErrors({});
     try {
       await login({ email: form.email.trim(), password: form.password });
       navigate(location.state?.from ?? "/", { replace: true });
@@ -84,24 +85,7 @@ export default function Login() {
 
       <main className="login-main">
         <div className="container login-layout">
-          <section className="login-intro" aria-labelledby="login-intro-title">
-            <Logo />
-
-            <p className="login-eyebrow">Todos al Agua Necochea</p>
-            <h1 id="login-intro-title" className="text-title">
-              Tu cuenta, tu lugar
-            </h1>
-            <p className="login-intro-copy">
-              Ingresá con tu cuenta para acceder a las áreas de cantina y huerta y
-              mantenerte al tanto de todo lo que pasa en la asociación.
-            </p>
-
-            <ul className="login-benefits">
-              <li>Consultá la carta y los horarios del Muelle Cantina.</li>
-              <li>Enterate de las actividades de Flor de Pan.</li>
-              <li>Accedé a los espacios según tus permisos.</li>
-            </ul>
-          </section>
+          <LoginIntro />
 
           <section className="login-card" aria-labelledby="login-card-title">
             <h2 id="login-card-title">Iniciá sesión</h2>
@@ -109,52 +93,16 @@ export default function Login() {
               Ingresá tus datos para continuar.
             </p>
 
-            {sessionExpired && (
-              <div className="login-notice login-notice-info" role="status">
-                <p>Tu sesión venció por inactividad. Iniciá sesión nuevamente para continuar.</p>
-              </div>
-            )}
-
-            {needsAdmin && (
-              <div className="login-notice" role="alert">
-                <p>
-                  Tu cuenta <strong>{user.email}</strong> no tiene permisos de
-                  administrador para acceder a esa sección.
-                </p>
-                <button
-                  className="btn btn-primary btn-block"
-                  type="button"
-                  onClick={logout}
-                >
-                  Cerrar sesión y usar otra cuenta
-                </button>
-              </div>
-            )}
-
-            {user?.rol === "admin" && !needsAdmin && (
-              <p className="login-success" role="status">
-                Ya iniciaste sesión como administrador.{" "}
-                <Link to="/admin">Ir al panel</Link>
-              </p>
-            )}
-
-            {registered && (
-              <p className="login-success" role="status">
-                ¡Registro exitoso! Iniciá sesión con tu cuenta.
-              </p>
-            )}
-
-            {recovered && (
-              <p className="login-success" role="status">
-                Contraseña actualizada. Iniciá sesión con tu nueva contraseña.
-              </p>
-            )}
-
-            {errors.general && (
-              <p className="login-error" role="alert" style={{ marginBottom: 16 }}>
-                {errors.general}
-              </p>
-            )}
+            <LoginMessages
+              sessionExpired={sessionExpired}
+              needsAdmin={needsAdmin}
+              user={user}
+              isAdmin={user?.rol === "admin" && !needsAdmin}
+              registered={registered}
+              recovered={recovered}
+              error={errors.general}
+              logout={logout}
+            />
 
             <form className="login-form" onSubmit={handleSubmit} noValidate>
               <div className="login-field">
@@ -168,12 +116,9 @@ export default function Login() {
                   value={form.email}
                   onChange={handleChange}
                   aria-invalid={Boolean(errors.email)}
-                  aria-describedby={errors.email ? "login-email-error" : undefined}
                 />
                 {errors.email && (
-                  <p className="login-error" id="login-email-error" role="alert">
-                    {errors.email}
-                  </p>
+                  <p className="login-error" role="alert">{errors.email}</p>
                 )}
               </div>
 
@@ -188,14 +133,9 @@ export default function Login() {
                   value={form.password}
                   onChange={handleChange}
                   aria-invalid={Boolean(errors.password)}
-                  aria-describedby={
-                    errors.password ? "login-password-error" : undefined
-                  }
                 />
                 {errors.password && (
-                  <p className="login-error" id="login-password-error" role="alert">
-                    {errors.password}
-                  </p>
+                  <p className="login-error" role="alert">{errors.password}</p>
                 )}
               </div>
 
