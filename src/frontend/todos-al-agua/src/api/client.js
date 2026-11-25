@@ -74,25 +74,49 @@ export async function request(ruta, metodo, datos, necesitaToken) {
   return verificar(respuesta, necesitaToken);
 }
 
+// Deja el email sin espacios y en minúsculas.
+function normalizarEmail(email) {
+  return email.trim().toLowerCase();
+}
+
 // Login, registro y recuperación.
 export const apiAuth = {
-  login: (email, password) =>
-    request("/users/login", "POST", { email, password }),
-  register: (name, email, password) =>
-    request("/users/register", "POST", {
+  // Ingresar con email y contraseña.
+  login(email, password) {
+    return request("/users/login", "POST", { email, password });
+  },
+
+  // Crear cuenta con el email normalizado.
+  register(name, email, password) {
+    const emailLimpio = normalizarEmail(email);
+    return request("/users/register", "POST", {
       name,
-      email: email.trim().toLowerCase(),
+      email: emailLimpio,
       password,
-    }),
-  emailExists: (email) =>
-    request(
-      "/users/exists?email=" + encodeURIComponent(email.trim().toLowerCase()),
-    ),
-  forgotPassword: (email) =>
-    request("/users/forgot-password", "POST", { email }),
-  resetPassword: (token, password) =>
-    request("/users/reset-password", "POST", { token, password }),
-  refresh: () => request("/users/refresh", "POST", null, true),
+    });
+  },
+
+  // Preguntar si el email ya está registrado.
+  emailExists(email) {
+    const emailLimpio = normalizarEmail(email);
+    const query = encodeURIComponent(emailLimpio);
+    return request("/users/exists?email=" + query);
+  },
+
+  // Pedir el mail con el link de recuperación.
+  forgotPassword(email) {
+    return request("/users/forgot-password", "POST", { email });
+  },
+
+  // Guardar la contraseña nueva con el token del mail.
+  resetPassword(token, password) {
+    return request("/users/reset-password", "POST", { token, password });
+  },
+
+  // Pedir un JWT nuevo sin escribir la contraseña.
+  refresh() {
+    return request("/users/refresh", "POST", null, true);
+  },
 };
 
 // Formulario de contacto.
