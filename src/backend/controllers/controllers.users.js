@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const ROL_POR_DEFECTO = "usuario";
-const DURACION_SESION = "1m";
+const DURACION_SESION = "15m";
 const MENSAJE_RECUPERACION =
   "Si el email existe, enviamos instrucciones para restablecer tu contraseña.";
 

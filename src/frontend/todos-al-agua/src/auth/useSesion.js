@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiAuth, setToken } from "../api/client";
 
-const AVISO_MS = 50 * 1000;  // avisar a los 50 segundos
-const CIERRE_MS = 60 * 1000; // cerrar a los 60 segundos
-const RENOVAR_MS = 30 * 1000;
+const AVISO_MS = 500 * 1000; // avisar a los 50 segundos
+const CIERRE_MS = 600 * 1000; // cerrar a los 60 segundos
+const RENOVAR_MS = 300 * 1000;
 
 // Hook que controla el tiempo de la sesión.
 // Se lo llama desde AuthProvider con el usuario y las funciones de sesión.
