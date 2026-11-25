@@ -1,22 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
-import UsersProvider from "./data/UsersProvider";
 import AuthProvider from "./auth/AuthProvider";
-import MenuProvider from "./data/MenuProvider";
 import SessionWarning from "./components/SessionWarning";
 import router from "./routes/index.jsx";
 import "./index.css";
 
+// Un solo proveedor: el de la sesión.
+// Los datos (menú y usuarios) los carga el Layout de las rutas.
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <UsersProvider>
-      <AuthProvider>
-        <MenuProvider>
-          <SessionWarning />
-          <RouterProvider router={router} />
-        </MenuProvider>
-      </AuthProvider>
-    </UsersProvider>
+    <AuthProvider>
+      <SessionWarning />
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 );

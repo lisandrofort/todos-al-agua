@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { apiUsers } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import {
   ETIQUETAS_PERMISO,
@@ -6,8 +7,6 @@ import {
   ROLES,
   permisosDeRol,
 } from "../../auth/permissions";
-import { useUsers } from "../../data/usersContext";
-
 const ROLES_DISPONIBLES = [
   ROLES.ADMIN,
   ROLES.CANTINA,
@@ -16,7 +15,23 @@ const ROLES_DISPONIBLES = [
 ];
 
 export default function UsersPanel() {
-  const { users, updateRole } = useUsers();
+  // La lista de usuarios se trae sola al abrir el panel.
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    apiUsers.getAll().then((data) => {
+      if (Array.isArray(data)) {
+        setUsers(
+          data.map((u) => ({
+            id: u.id,
+            nombre: u.name ?? u.nombre ?? u.email,
+            email: u.email,
+            rol: u.rol ?? "usuario",
+          })),
+        );
+      }
+    }).catch(() => {});
+  }, []);
+
   const { user, hasPermission, logout } = useAuth();
   const puedeEditarRoles = hasPermission(PERMISOS.EDITAR_ROLES);
   const [error, setError] = useState("");
@@ -26,7 +41,10 @@ export default function UsersPanel() {
     const target = users.find((current) => current.id === id);
 
     try {
-      await updateRole(id, nextRol);
+      await apiUsers.update(id, { rol: nextRol });
+      setUsers((all) =>
+        all.map((u) => (u.id === id ? { ...u, rol: nextRol } : u)),
+      );
     } catch (cause) {
       setError(cause.message);
       return;

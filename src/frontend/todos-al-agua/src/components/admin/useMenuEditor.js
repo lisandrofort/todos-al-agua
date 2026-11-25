@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useMenu } from "../../data/menuContext";
+import { apiMenu } from "../../api/client";
 import menuData from "../../data/menu.json";
 import { clone, normalizeForSave, validateMenu } from "../../utils/menuUtils";
 
-export default function useMenuEditor() {
-  const { menu, saveMenu, resetMenu } = useMenu();
+export default function useMenuEditor(menu, setMenu) {
   const [draft, setDraft] = useState(() => clone(menu));
   const [activeCategory, setActiveCategory] = useState(0);
   const [message, setMessage] = useState(null);
@@ -128,7 +127,10 @@ export default function useMenuEditor() {
     }
 
     const next = normalizeForSave(draft);
-    saveMenu(next);
+    setMenu(next);
+    Promise.all(next.map((c) => apiMenu.update(c.id, c))).catch((error) =>
+      console.error("No se pudo guardar el menú:", error.message),
+    );
     setDraft(clone(next));
     setMessage({
       type: "success",
@@ -142,7 +144,7 @@ export default function useMenuEditor() {
   }
 
   function handleReset() {
-    resetMenu();
+    setMenu(menuData.menu);
     setDraft(clone(menuData.menu));
     setActiveCategory(0);
     setMessage({ type: "success", text: "Menú original restablecido." });

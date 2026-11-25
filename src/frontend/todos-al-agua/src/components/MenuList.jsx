@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
+import { apiMenu } from "../api/client";
 import { formatPrice } from "../utils/formatPrice";
-import { useMenu } from "../data/menuContext";
+import menuData from "../data/menu.json";
 import SectionHeading from "../ui/SectionHeading";
 import "./MenuList.css";
 
@@ -13,13 +15,18 @@ function ItemPrice({ item }) {
     );
   }
 
-  return (
-    <span className="menu-item-price">{formatPrice(item.precio)}</span>
-  );
+  return <span className="menu-item-price">{formatPrice(item.precio)}</span>;
 }
 
 export default function MenuList() {
-  const { menu } = useMenu();
+  // La carta se trae sola al abrir la página.
+  const [menu, setMenu] = useState(menuData.menu);
+
+  useEffect(() => {
+    apiMenu.getAll().then((data) => {
+      if (Array.isArray(data) && data.length) setMenu(data);
+    }).catch(() => {});
+  }, []);
 
   return (
     <section className="section section--soft" id="menu">
@@ -36,9 +43,7 @@ export default function MenuList() {
               <h3>{category.categoria}</h3>
 
               {category.nota_guarnicion && (
-                <p className="menu-category-note">
-                  {category.nota_guarnicion}
-                </p>
+                <p className="menu-category-note">{category.nota_guarnicion}</p>
               )}
 
               <ul className="menu-items">

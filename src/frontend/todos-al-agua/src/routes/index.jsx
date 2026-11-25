@@ -18,60 +18,45 @@ import NotFound from "../pages/NotFound";
 import { PERMISOS } from "../auth/permissions";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/cantina",
-    element: <Cantina />,
-  },
-  {
-    path: "/huerta",
-    element: <Huerta />,
-  },
-  {
-    element: <GuestRoute />,
-    children: [
-      { path: "/login", element: <Login /> },
-      { path: "/registro", element: <Register /> },
-    ],
-  },
-  {
-    path: "/recuperar",
-    element: <RecoverPassword />,
-  },
-  {
-    path: "/restablecer",
-    element: <ResetPassword />,
-  },
-  {
-    path: "/admin",
-    element: <ProtectedRoute requiredPermission={PERMISOS.ACCESO_ADMIN} />,
-    children: [
+  { path: "/", element: <Home /> },
+      { path: "/cantina", element: <Cantina /> },
+      { path: "/huerta", element: <Huerta /> },
       {
-        element: <Admin />,
+        element: <GuestRoute />,
         children: [
-          { index: true, element: <AdminIndex /> },
-          {
-            element: <ProtectedRoute requiredPermission={PERMISOS.VER_USUARIOS} />,
-            children: [{ path: "usuarios", element: <UsersPanel /> }],
-          },
-          {
-            element: <ProtectedRoute requiredPermission={PERMISOS.EDITAR_MENU} />,
-            children: [{ path: "menu", element: <MenuPanel /> }],
-          },
-          {
-            element: <ProtectedRoute requiredPermission={PERMISOS.EDITAR_HUERTA} />,
-            children: [{ path: "huerta", element: <HuertaPanel /> }],
-          },
-          { path: "ayuda", element: <AyudaPanel /> },
+          { path: "/login", element: <Login /> },
+          { path: "/registro", element: <Register /> },
         ],
       },
-    ],
-  },
-  { path: "/404", element: <NotFound /> },
-  { path: "*", element: <NotFound /> },
+      { path: "/recuperar", element: <RecoverPassword /> },
+      { path: "/restablecer", element: <ResetPassword /> },
+      {
+        path: "/admin",
+        element: <ProtectedRoute requiredPermission={PERMISOS.ACCESO_ADMIN} />,
+        children: [
+          {
+            element: <Admin />,
+            children: [
+              { index: true, element: <AdminIndex /> },
+              {
+                element: <ProtectedRoute requiredPermission={PERMISOS.VER_USUARIOS} />,
+                children: [{ path: "usuarios", element: <UsersPanel /> }],
+              },
+              {
+                element: <ProtectedRoute requiredPermission={PERMISOS.EDITAR_MENU} />,
+                children: [{ path: "menu", element: <MenuPanel /> }],
+              },
+              {
+                element: <ProtectedRoute requiredPermission={PERMISOS.EDITAR_HUERTA} />,
+                children: [{ path: "huerta", element: <HuertaPanel /> }],
+              },
+              { path: "ayuda", element: <AyudaPanel /> },
+            ],
+          },
+        ],
+      },
+      { path: "/404", element: <NotFound /> },
+      { path: "*", element: <NotFound /> },
 ]);
 
 export default router;
