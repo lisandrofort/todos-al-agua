@@ -61,14 +61,20 @@ export default function Login() {
   const recovered = location.state?.recovered;
   const needsAdmin = Boolean(location.state?.from) && user && user.rol !== "admin";
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Guarda lo que el usuario escribe en el formulario.
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setForm((actual) => ({ ...actual, [name]: value }));
+  // Guarda lo que el usuario escribe en el email.
+  function handleEmailChange(event) {
+    setEmail(event.target.value);
+    setErrors({});
+  }
+
+  // Guarda lo que el usuario escribe en la contraseña.
+  function handlePasswordChange(event) {
+    setPassword(event.target.value);
     setErrors({});
   }
 
@@ -76,7 +82,7 @@ export default function Login() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const nextErrors = validate(form);
+    const nextErrors = validate({ email, password });
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) {
@@ -85,7 +91,7 @@ export default function Login() {
 
     setSubmitting(true);
     try {
-      await login({ email: form.email.trim(), password: form.password });
+      await login({ email: email.trim(), password: password });
       navigate(location.state?.from ?? "/", { replace: true });
     } catch (error) {
       setErrors({ general: error.message });
@@ -132,8 +138,8 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   placeholder="nombre@ejemplo.com"
-                  value={form.email}
-                  onChange={handleChange}
+                  value={email}
+                  onChange={handleEmailChange}
                   aria-invalid={Boolean(errors.email)}
                 />
                 {errors.email && (
@@ -149,8 +155,8 @@ export default function Login() {
                   type="password"
                   autoComplete="current-password"
                   placeholder="Tu contraseña"
-                  value={form.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={handlePasswordChange}
                   aria-invalid={Boolean(errors.password)}
                 />
                 {errors.password && (
