@@ -11,8 +11,8 @@ const MENSAJE_RECUPERACION =
   "Si el email existe, enviamos instrucciones para restablecer tu contraseña.";
 
 function publicUser(user) {
-  if (!user) return user;
-  const { pass, encryptedPass, ...safe } = user;
+  if (!user) return null;
+  const { pass, ...safe } = user;
   return safe;
 }
 
@@ -64,11 +64,9 @@ async function verifyUser(email, password) {
 }
 
 function signSession({ id, email, name, rol }) {
-  return jwt.sign(
-    { id, email, name, rol },
-    process.env.CANTINA_TOKEN,
-    { expiresIn: DURACION_SESION },
-  );
+  return jwt.sign({ id, email, name, rol }, process.env.CANTINA_TOKEN, {
+    expiresIn: DURACION_SESION,
+  });
 }
 
 function refreshSession(dataUser) {
@@ -147,7 +145,9 @@ async function requestPasswordReset(email) {
   await Reset.invalidateForUser(user.id);
   await Reset.create(user.id, token);
 
-  const frontendUrl = (process.env.FRONTEND_URL ?? "http://localhost:5173").replace(/\/$/, "");
+  const frontendUrl = (
+    process.env.FRONTEND_URL ?? "http://localhost:5173"
+  ).replace(/\/$/, "");
   const link = `${frontendUrl}/restablecer?token=${token}`;
 
   try {

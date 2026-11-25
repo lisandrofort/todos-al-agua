@@ -1,14 +1,14 @@
-const { admin } = require('../lib/firebase');
-const bcrypt = require('bcryptjs');
+const { admin } = require("../lib/firebase");
+const bcrypt = require("bcryptjs");
 
 function normalizeEmail(email) {
-  return String(email ?? '').trim().toLowerCase();
+  return String(email ?? "")
+    .trim()
+    .toLowerCase();
 }
 
-// Incluye la versión original sin normalizar para encontrar cuentas viejas
-// registradas antes de que se normalizara el email.
 function emailCandidates(email) {
-  const clean = String(email ?? '').trim();
+  const clean = String(email ?? "").trim();
   const normalized = clean.toLowerCase();
   return normalized === clean ? [normalized] : [normalized, clean];
 }
@@ -16,7 +16,7 @@ function emailCandidates(email) {
 class User {
   constructor() {
     this.db = admin;
-    this.collection = this.db.collection('users');
+    this.collection = this.db.collection("users");
   }
 
   async getAll() {
@@ -45,16 +45,16 @@ class User {
 
     // Cubre cuentas viejas creadas antes de existiera la reserva.
     if (await User.exists(email)) {
-      const error = new Error('Ya hay un registro con este email');
+      const error = new Error("Ya hay un registro con este email");
       error.status = 409;
       throw error;
     }
 
     return admin.runTransaction(async (transaction) => {
-      const emailRef = admin.collection('user_emails').doc(normalized);
+      const emailRef = admin.collection("user_emails").doc(normalized);
       const lock = await transaction.get(emailRef);
       if (lock.exists) {
-        const error = new Error('Ya hay un registro con este email');
+        const error = new Error("Ya hay un registro con este email");
         error.status = 409;
         throw error;
       }
@@ -69,8 +69,8 @@ class User {
   static async getByEmail(email) {
     for (const candidate of emailCandidates(email)) {
       const snapshot = await admin
-        .collection('users')
-        .where('email', '==', candidate)
+        .collection("users")
+        .where("email", "==", candidate)
         .limit(1)
         .get();
       if (!snapshot.empty) {
@@ -110,13 +110,21 @@ class User {
 
   async update(id, data) {
     const current = await this.getById(id);
-    const updateData = data.email ? { ...data, email: normalizeEmail(data.email) } : data;
+    const updateData = data.email
+      ? { ...data, email: normalizeEmail(data.email) }
+      : data;
 
-    if (current && updateData.email && updateData.email !== normalizeEmail(current.email)) {
+    if (
+      current &&
+      updateData.email &&
+      updateData.email !== normalizeEmail(current.email)
+    ) {
       const batch = admin.batch();
       batch.update(this.collection.doc(id), updateData);
-      batch.delete(admin.collection('user_emails').doc(normalizeEmail(current.email)));
-      batch.set(admin.collection('user_emails').doc(updateData.email), {
+      batch.delete(
+        admin.collection("user_emails").doc(normalizeEmail(current.email)),
+      );
+      batch.set(admin.collection("user_emails").doc(updateData.email), {
         userId: id,
         createdAt: Date.now(),
       });
@@ -140,7 +148,9 @@ class User {
     const batch = admin.batch();
     batch.delete(this.collection.doc(id));
     if (user?.email) {
-      batch.delete(admin.collection('user_emails').doc(normalizeEmail(user.email)));
+      batch.delete(
+        admin.collection("user_emails").doc(normalizeEmail(user.email)),
+      );
     }
     await batch.commit();
     return { id, deleted: true };
