@@ -66,8 +66,16 @@ export default function Login() {
   const location = useLocation();
   const { user, login, logout, sessionExpired } = useAuth();
 
-  const registered = location.state?.registered;
-  const recovered = location.state?.recovered;
+  // Guardo el estado que viene de otra pantalla (registro, recuperación, ruta intentada).
+  const estadoAnterior = location.state;
+
+  // True si venimos del registro.
+  const registered = estadoAnterior?.registered === true;
+
+  // True si venimos de cambiar la contraseña.
+  const recovered = estadoAnterior?.recovered === true;
+
+  // True si intentamos entrar a una sección de admin sin ser admin.
   const needsAdmin =
     Boolean(location.state?.from) && user && user.rol !== "admin";
 
