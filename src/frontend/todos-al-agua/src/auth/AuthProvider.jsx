@@ -14,6 +14,8 @@ function leerUsuario() {
   }
 
   try {
+    // Para decodificar el base64 a string normal:
+    // ejemplo: {"id":"123","rol":"admin","exp":1790000000}
     const payload = JSON.parse(atob(token.split(".")[1]));
 
     if (payload.exp * 1000 <= Date.now()) {

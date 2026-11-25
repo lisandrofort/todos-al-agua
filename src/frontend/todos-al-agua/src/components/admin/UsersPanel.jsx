@@ -18,18 +18,24 @@ export default function UsersPanel() {
   // La lista de usuarios se trae sola al abrir el panel.
   const [users, setUsers] = useState([]);
   useEffect(() => {
-    apiUsers.getAll().then((data) => {
-      if (Array.isArray(data)) {
-        setUsers(
-          data.map((u) => ({
-            id: u.id,
-            nombre: u.name ?? u.nombre ?? u.email,
-            email: u.email,
-            rol: u.rol ?? "usuario",
-          })),
-        );
-      }
-    }).catch(() => {});
+    function cargar() {
+      apiUsers.getAll().then((data) => {
+        if (Array.isArray(data)) {
+          setUsers(
+            data.map((u) => ({
+              id: u.id,
+              nombre: u.name ?? u.nombre ?? u.email,
+              email: u.email,
+              rol: u.rol ?? "usuario",
+            })),
+          );
+        }
+      }).catch(() => {});
+    }
+
+    cargar();
+    window.addEventListener("todos-al-agua:login", cargar);
+    return () => window.removeEventListener("todos-al-agua:login", cargar);
   }, []);
 
   const { user, hasPermission, logout } = useAuth();
