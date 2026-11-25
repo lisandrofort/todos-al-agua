@@ -14,6 +14,14 @@ const navLinks = [
   { href: "/huerta", label: "Huerta" },
 ];
 
+// Define a dónde ir después del login: al destino original o al inicio.
+function destinoDespuesDelLogin(location) {
+  if (location.state && location.state.from) {
+    return location.state.from;
+  }
+  return "/";
+}
+
 // Dice si el email tiene forma válida: un "@", usuario y dominio con punto.
 function esEmailValido(email) {
   const emailLimpio = email.trim();
@@ -37,6 +45,7 @@ function esEmailValido(email) {
 function validate(values) {
   const errors = {};
 
+  // trim() elimina espacios en blanco
   if (!values.email.trim()) {
     errors.email = "Ingresá tu email.";
   } else if (!esEmailValido(values.email)) {
@@ -59,7 +68,8 @@ export default function Login() {
 
   const registered = location.state?.registered;
   const recovered = location.state?.recovered;
-  const needsAdmin = Boolean(location.state?.from) && user && user.rol !== "admin";
+  const needsAdmin =
+    Boolean(location.state?.from) && user && user.rol !== "admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,6 +95,7 @@ export default function Login() {
     const nextErrors = validate({ email, password });
     setErrors(nextErrors);
 
+    // Cuenta si hay o no errores
     if (Object.keys(nextErrors).length > 0) {
       return;
     }
@@ -92,7 +103,12 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login({ email: email.trim(), password: password });
-      navigate(location.state?.from ?? "/", { replace: true });
+
+      // Vamos al destino original (por ejemplo /admin/menu) o al inicio.
+      const destino = destinoDespuesDelLogin(location);
+
+      // replace: true evita que el botón "atrás" te devuelva al login.
+      navigate(destino, { replace: true });
     } catch (error) {
       setErrors({ general: error.message });
     } finally {
@@ -143,7 +159,9 @@ export default function Login() {
                   aria-invalid={Boolean(errors.email)}
                 />
                 {errors.email && (
-                  <p className="login-error" role="alert">{errors.email}</p>
+                  <p className="login-error" role="alert">
+                    {errors.email}
+                  </p>
                 )}
               </div>
 
@@ -160,7 +178,9 @@ export default function Login() {
                   aria-invalid={Boolean(errors.password)}
                 />
                 {errors.password && (
-                  <p className="login-error" role="alert">{errors.password}</p>
+                  <p className="login-error" role="alert">
+                    {errors.password}
+                  </p>
                 )}
               </div>
 
@@ -170,7 +190,11 @@ export default function Login() {
                 </Link>
               </div>
 
-              <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
+              <button
+                className="btn btn-primary btn-block"
+                type="submit"
+                disabled={submitting}
+              >
                 {submitting ? "Ingresando..." : "Ingresar"}
               </button>
             </form>
