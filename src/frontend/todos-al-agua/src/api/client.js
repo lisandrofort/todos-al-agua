@@ -135,8 +135,8 @@ export const apiMenu = {
 
 // Usuarios: todo pide admin.
 export const apiUsers = {
-  getAll: () => request("/users", null, null, true),
-  getById: (id) => request("/users/" + id, null, null, true),
+  getAll: () => request("/users", "GET", null, true),
+  getById: (id) => request("/users/" + id, "GET", null, true),
   update: (id, data) => request("/users/" + id, "PUT", data, true),
   remove: (id) => request("/users/" + id, "DELETE", null, true),
 };
