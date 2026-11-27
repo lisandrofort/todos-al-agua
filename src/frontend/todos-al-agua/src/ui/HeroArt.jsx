@@ -8,8 +8,8 @@ export default function HeroArt() {
         className="hero-logo-img"
         src="/asociacion-civil-todos-al-agua-transparente.png"
         alt="Asociación Civil Todos al Agua de Necochea"
-        width="1329"
-        height="800"
+        width="432"
+        height="260"
       />
       <p className="hero-logo-caption">
         <span className="hero-logo-dot" aria-hidden="true" />
