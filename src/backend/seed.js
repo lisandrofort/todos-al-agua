@@ -29,14 +29,22 @@ async function seedUsers() {
     console.log("users: el admin ya existe, se omite");
     return;
   }
-  const pass = await bcrypt.hash("123456", 10);
+  const password = process.env.ADMIN_SEED_PASSWORD;
+  if (!password || password.length < 12) {
+    throw new Error(
+      "ADMIN_SEED_PASSWORD debe definirse con al menos 12 caracteres antes de ejecutar el seed",
+    );
+  }
+
+  const pass = await bcrypt.hash(password, 10);
   await collection.add({
     name: "Administrador",
     email,
     pass,
     rol: "admin",
   });
-  console.log("users: admin cargado (admin@todosalagua.com / 123456)");
+  // Nunca imprimir la contraseña: se entrega por canal seguro al administrador.
+  console.log(`users: admin cargado (${email})`);
 }
 
 async function main() {
