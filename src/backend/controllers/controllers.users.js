@@ -132,6 +132,9 @@ async function deleteUserById(id) {
   if (!userFound) {
     return null;
   }
+  if (userFound.rol === "admin") {
+    throw falla("No se puede eliminar a un administrador", 403);
+  }
   return await new User().delete(id);
 }
 

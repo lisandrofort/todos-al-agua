@@ -168,6 +168,17 @@
 
 .admin-user-card-role {
   display: block;
+  flex: 1;
+}
+
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-row-actions .admin-user-card-role {
+  align-items: flex-end;
 }
 
 .admin-note {

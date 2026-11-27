@@ -7,7 +7,7 @@ import {
   ROLES,
   permisosDeRol,
 } from "../../auth/permissions";
-import ConfirmAdminDialog from "./ConfirmAdminDialog";
+import ConfirmDialog from "./ConfirmDialog";
 const ROLES_DISPONIBLES = [
   ROLES.ADMIN,
   ROLES.CANTINA,
@@ -78,6 +78,7 @@ export default function UsersPanel() {
       target.rol !== ROLES.ADMIN
     ) {
       setConfirmacion({
+        tipo: "admin",
         id,
         nextRol,
         nombre: target.nombre,
@@ -89,11 +90,51 @@ export default function UsersPanel() {
     aplicarCambioRol(id, nextRol);
   }
 
-  function confirmarCambio() {
+  function handleDelete(id) {
+    const target = users.find((current) => current.id === id);
+    if (!target || target.rol === ROLES.ADMIN) return;
+
+    setConfirmacion({
+      tipo: "eliminar",
+      id,
+      nombre: target.nombre,
+      email: target.email,
+    });
+  }
+
+  async function eliminarUsuario(id) {
+    setError("");
+    try {
+      await apiUsers.remove(id);
+      setUsers((all) => all.filter((u) => u.id !== id));
+    } catch (cause) {
+      setError(cause.message);
+    }
+  }
+
+  function confirmarAccion() {
     if (!confirmacion) return;
-    aplicarCambioRol(confirmacion.id, confirmacion.nextRol);
+
+    if (confirmacion.tipo === "admin") {
+      aplicarCambioRol(confirmacion.id, confirmacion.nextRol);
+    } else {
+      eliminarUsuario(confirmacion.id);
+    }
     setConfirmacion(null);
   }
+
+  const tituloConfirmacion =
+    confirmacion?.tipo === "admin"
+      ? "¿Dar rol de administrador?"
+      : "¿Eliminar este usuario?";
+  const mensajeConfirmacion =
+    confirmacion?.tipo === "admin"
+      ? `Estás por dar el rol más alto a ${confirmacion.nombre} (${confirmacion.email}). Podrá ver y modificar usuarios, menú y huerta.`
+      : `Se va a eliminar la cuenta de ${confirmacion.nombre} (${confirmacion.email}). Esta acción no se puede deshacer.`;
+  const textoConfirmacion =
+    confirmacion?.tipo === "admin"
+      ? "Sí, dar rol de administrador"
+      : "Sí, eliminar usuario";
 
   return (
     <section>
@@ -168,20 +209,31 @@ export default function UsersPanel() {
                     {current.rol === ROLES.ADMIN ? (
                       <span className="admin-badge">Rol protegido</span>
                     ) : puedeEditarRoles ? (
-                      <select
-                        className="admin-select"
-                        aria-label={`Rol de ${current.nombre}`}
-                        value={current.rol}
-                        onChange={(event) =>
-                          handleRoleChange(current.id, event.target.value)
-                        }
-                      >
-                        {ROLES_DISPONIBLES.map((rol) => (
-                          <option key={rol} value={rol}>
-                            {rol}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="admin-row-actions">
+                        <select
+                          className="admin-select"
+                          aria-label={`Rol de ${current.nombre}`}
+                          value={current.rol}
+                          onChange={(event) =>
+                            handleRoleChange(current.id, event.target.value)
+                          }
+                        >
+                          {ROLES_DISPONIBLES.map((rol) => (
+                            <option key={rol} value={rol}>
+                              {rol}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="admin-icon-btn"
+                          type="button"
+                          title={`Eliminar ${current.nombre}`}
+                          aria-label={`Eliminar ${current.nombre}`}
+                          onClick={() => handleDelete(current.id)}
+                        >
+                          ×
+                        </button>
+                      </div>
                     ) : (
                       <span className="admin-badge">Sin permiso</span>
                     )}
@@ -233,29 +285,42 @@ export default function UsersPanel() {
                 )}
               </ul>
 
-              <label className="admin-user-card-role">
-                <span className="admin-field-label">Cambiar rol</span>
-                {current.rol === ROLES.ADMIN ? (
-                  <span className="admin-badge">Rol protegido</span>
-                ) : puedeEditarRoles ? (
-                  <select
-                    className="admin-select"
-                    aria-label={`Rol de ${current.nombre}`}
-                    value={current.rol}
-                    onChange={(event) =>
-                      handleRoleChange(current.id, event.target.value)
-                    }
+              <div className="admin-row-actions">
+                <label className="admin-user-card-role">
+                  <span className="admin-field-label">Cambiar rol</span>
+                  {current.rol === ROLES.ADMIN ? (
+                    <span className="admin-badge">Rol protegido</span>
+                  ) : puedeEditarRoles ? (
+                    <select
+                      className="admin-select"
+                      aria-label={`Rol de ${current.nombre}`}
+                      value={current.rol}
+                      onChange={(event) =>
+                        handleRoleChange(current.id, event.target.value)
+                      }
+                    >
+                      {ROLES_DISPONIBLES.map((rol) => (
+                        <option key={rol} value={rol}>
+                          {rol}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="admin-badge">Sin permiso</span>
+                  )}
+                </label>
+                {current.rol !== ROLES.ADMIN && puedeEditarRoles && (
+                  <button
+                    className="admin-icon-btn"
+                    type="button"
+                    title={`Eliminar ${current.nombre}`}
+                    aria-label={`Eliminar ${current.nombre}`}
+                    onClick={() => handleDelete(current.id)}
                   >
-                    {ROLES_DISPONIBLES.map((rol) => (
-                      <option key={rol} value={rol}>
-                        {rol}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="admin-badge">Sin permiso</span>
+                    ×
+                  </button>
                 )}
-              </label>
+              </div>
             </article>
           );
         })}
@@ -266,9 +331,12 @@ export default function UsersPanel() {
         desde el panel.
       </p>
 
-      <ConfirmAdminDialog
-        usuario={confirmacion}
-        onConfirmar={confirmarCambio}
+      <ConfirmDialog
+        abierto={Boolean(confirmacion)}
+        titulo={tituloConfirmacion}
+        mensaje={mensajeConfirmacion}
+        confirmarTexto={textoConfirmacion}
+        onConfirmar={confirmarAccion}
         onCancelar={cancelarConfirmacion}
       />
     </section>

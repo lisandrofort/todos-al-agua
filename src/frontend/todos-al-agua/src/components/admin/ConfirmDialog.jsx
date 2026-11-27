@@ -1,13 +1,20 @@
 import { useEffect, useRef } from "react";
 import "../SessionWarning.css";
 
-// Diálogo de confirmación para entregar el rol más alto a otro usuario.
-export default function ConfirmAdminDialog({ usuario, onConfirmar, onCancelar }) {
+// Diálogo genérico para acciones delicadas del panel (dar rol admin, borrar usuario).
+export default function ConfirmDialog({
+  abierto,
+  titulo,
+  mensaje,
+  confirmarTexto,
+  onConfirmar,
+  onCancelar,
+}) {
   const dialogRef = useRef(null);
   const cancelarRef = useRef(null);
 
   useEffect(() => {
-    if (!usuario) return undefined;
+    if (!abierto) return undefined;
 
     cancelarRef.current?.focus();
 
@@ -34,9 +41,9 @@ export default function ConfirmAdminDialog({ usuario, onConfirmar, onCancelar })
 
     document.addEventListener("keydown", alPresionar);
     return () => document.removeEventListener("keydown", alPresionar);
-  }, [usuario, onCancelar]);
+  }, [abierto, onCancelar]);
 
-  if (!usuario) return null;
+  if (!abierto) return null;
 
   return (
     <div
@@ -50,16 +57,12 @@ export default function ConfirmAdminDialog({ usuario, onConfirmar, onCancelar })
         className="session-warning"
         role="alertdialog"
         aria-modal="true"
-        aria-labelledby="confirm-admin-title"
-        aria-describedby="confirm-admin-desc"
+        aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-desc"
       >
-        <span className="session-warning-icon" aria-hidden="true">★</span>
-        <h2 id="confirm-admin-title">¿Dar rol de administrador?</h2>
-        <p id="confirm-admin-desc">
-          Estás por dar el rol más alto a{" "}
-          <strong>{usuario.nombre}</strong> ({usuario.email}). Podrá ver y
-          modificar usuarios, menú y huerta.
-        </p>
+        <span className="session-warning-icon" aria-hidden="true">!</span>
+        <h2 id="confirm-dialog-title">{titulo}</h2>
+        <p id="confirm-dialog-desc">{mensaje}</p>
         <div className="session-warning-actions">
           <button
             ref={cancelarRef}
@@ -74,7 +77,7 @@ export default function ConfirmAdminDialog({ usuario, onConfirmar, onCancelar })
             type="button"
             onClick={onConfirmar}
           >
-            Sí, dar rol de administrador
+            {confirmarTexto}
           </button>
         </div>
       </section>
