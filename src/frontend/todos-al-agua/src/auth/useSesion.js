@@ -36,16 +36,25 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
     setUser(payload);
   }, [setUser]);
 
+  // Cerrar por inactividad y volver al inicio. replace() evita volver atrás
+  // a una ruta protegida ya sin sesión.
+  const cerrarYVolverAlInicio = useCallback(() => {
+    logout();
+    setSessionExpired(true);
+    window.location.replace("/");
+  }, [logout, setSessionExpired]);
+
   // Extender desde el botón: renueva y SÍ resetea el contador.
   const extendSession = useCallback(async () => {
     try {
       await renovarToken();
       marcarActividad();
     } catch {
-      logout();
-      setSessionExpired(true);
+      // Si el backend no responde (Render suspendido), no dejamos la sesión
+      // a medias: se cierra y se vuelve al inicio igual que por inactividad.
+      cerrarYVolverAlInicio();
     }
-  }, [renovarToken, marcarActividad, logout, setSessionExpired]);
+  }, [renovarToken, marcarActividad, cerrarYVolverAlInicio]);
 
   // Al arrancar la sesión, marcamos "ahora" como última actividad.
   useEffect(() => {
@@ -107,19 +116,15 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
       const tiempoInactivo = Date.now() - ultimaActividad.current;
 
       if (tiempoInactivo >= CIERRE_MS) {
-        // Primero cerramos la sesión y después avisamos (para que no se borre).
-        logout();
-        setSessionExpired(true);
-        // Con el modal sin respuesta, volvemos al inicio. replace() evita que
-        // el botón "atrás" devuelva a una ruta protegida ya sin sesión.
-        window.location.replace("/");
+        // Con el modal sin respuesta, cerramos y volvemos al inicio.
+        cerrarYVolverAlInicio();
       } else if (tiempoInactivo >= AVISO_MS) {
         setMostrarAviso(true);
       }
     }, 1000);
 
     return () => clearInterval(id);
-  }, [user, logout, setSessionExpired]);
+  }, [user, cerrarYVolverAlInicio]);
 
   // Sincronizar actividad, login y logout entre pestañas.
   useEffect(() => {
