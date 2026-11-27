@@ -7,17 +7,16 @@ import Footer from "../components/Footer";
 import LoginIntro from "../components/LoginIntro";
 import LoginMessages from "../components/LoginMessages";
 import { useAuth } from "../auth/AuthContext";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-];
+const navLinks = linksPara("login");
 
 // Define a dónde ir después del login: al destino original o al inicio.
 function destinoDespuesDelLogin(location) {
-  if (location.state && location.state.from) {
-    return location.state.from;
+  const destino = location.state?.from;
+  // Solo aceptar rutas internas: nunca un state manipulado con otra URL.
+  if (typeof destino === "string" && destino.startsWith("/") && !destino.startsWith("//")) {
+    return destino;
   }
   return "/";
 }

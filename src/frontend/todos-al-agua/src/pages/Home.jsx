@@ -6,13 +6,9 @@ import Activities from "../components/Activities";
 import Teaching from "../components/Teaching";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-  { href: "/login", label: "Iniciar sesión" },
-  { href: "/registro", label: "Registrarse" },
-];
+const navLinks = linksPara("home");
 
 export default function Home() {
   return (

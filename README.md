@@ -53,6 +53,7 @@ todos-al-agua/
 cd src/backend
 npm install
 # creá src/backend/.env con las variables listadas abajo
+# antes de correr el seed, definí ADMIN_SEED_PASSWORD en .env (mínimo 12 caracteres)
 node seed.js          # carga el menú y el usuario admin (una sola vez)
 npm run dev           # http://localhost:3000
 
@@ -67,17 +68,19 @@ Usuario de prueba: `admin@todosalagua.com` / `123456`.
 
 ## Variables de entorno
 
-Los archivos `.env` están en `.gitignore`: **nunca subir credenciales**.
+Los archivos `.env` están en `.gitignore`: **nunca subir credenciales**. Hay plantillas versionadas en `src/backend/.env.example` y `src/frontend/todos-al-agua/.env.example`.
 
 Backend (`src/backend/.env`):
 
 | Variable | Uso |
 |---|---|
 | `API_KEY`, `AUTH_DOMAIN`, `PROJECT_ID`, `STORAGE_BUCKET`, `MESSAGING_SENDER_ID`, `APP_ID` | Configuración de la app web de Firebase |
-| `CANTINA_TOKEN` | Secreto para firmar y verificar los JWT |
-| `ROL_ADMIN` | Rol exigido por los endpoints de administración |
+| `CANTINA_TOKEN` | Secreto aleatorio de al menos 32 caracteres para firmar JWT (obligatorio; generalo con `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) |
+| `ROL_ADMIN` | Rol exigido por los endpoints de administración (obligatorio) |
 | `PORT` | Puerto del servidor (por defecto, `3000`) |
-| `FRONTEND_URL` | Origen permitido por CORS y base del link de recuperación |
+| `FRONTEND_URL` | Origen exacto del frontend, obligatorio: se usa en CORS y en el link de recuperación (sin barra final) |
+| `TRUST_PROXY` | En Render, `1` o `true` para respetar `X-Forwarded-For` en el rate limiting |
+| `ADMIN_SEED_PASSWORD` | Contraseña del admin creado por `seed.js` (mínimo 12 caracteres; solo al cargar el seed) |
 | `RESEND_API_KEY` | API key de Resend para enviar emails de recuperación |
 | `EMAIL_FROM` | Remitente verificado en Resend |
 | `RESEND_API_URL` | URL de la API de Resend (opcional; por defecto `https://api.resend.com`) |
@@ -103,7 +106,7 @@ Frontend (`src/frontend/todos-al-agua/.env`):
 
 ## API REST
 
-Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren cabecera `Authorization: Bearer <token>` y rol `admin`.
+Base local: `http://localhost:3000`. Los endpoints privados requieren cabecera `Authorization: Bearer <token>` y rol `admin` verificado contra Firestore. Login, registro, recuperación, restablecimiento, `/users/exists` y `/contact` tienen límite de intentos por IP (429 + `Retry-After`).
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
@@ -125,12 +128,12 @@ Base local: `http://localhost:3000`. Los endpoints marcados con 🔒 requieren c
 | `PUT` | `/menu/:id` | privado | Actualiza categoría |
 | `DELETE` | `/menu/:id` | privado | Elimina categoría |
 | `POST` | `/menu/:id/items` | privado | Agrega plato |
-| `PUT` | `/menu/:id/items/:itemName` | privado | Actualiza plato |
-| `DELETE` | `/menu/:id/items/:itemName` | privado | Elimina plato |
+| `PUT` | `/menu/:id/items/:itemId` | privado | Actualiza plato por ID (acepta el nombre por compatibilidad) |
+| `DELETE` | `/menu/:id/items/:itemId` | privado | Elimina plato por ID (acepta el nombre por compatibilidad) |
 
 ## Autenticación y roles
 
-- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña). El frontend lleva un **cronómetro de inactividad de 60 segundos**: a los 50 s aparece un diálogo *"¿Seguís ahí?"* para seguir conectado o cerrar sesión, y a los 60 s sin interacción la sesión se cierra y `/login` muestra un aviso. Cualquier click, tecla, scroll o cambio de pestaña reinicia el cronómetro y renueva el JWT cuando está por vencer. El cronómetro se sincroniza entre pestañas.
+- Las contraseñas se guardan con hash de `bcryptjs`. El login devuelve un **JWT** con `id`, `email`, `name` y `rol` (nunca la contraseña). El JWT dura **15 minutos** y se renueva automáticamente con actividad. El frontend lleva un **cronómetro de inactividad de 10 minutos**: a los 500 s (~8 min) aparece un diálogo *"¿Seguís ahí?"* para seguir conectado o cerrar sesión, y a los 600 s sin interacción la sesión se cierra y `/login` muestra un aviso. La actividad y el cierre de sesión se sincronizan entre pestañas. Cada endpoint protegido revalida el rol contra Firestore, por lo que un token con privilegios revocados deja de ser válido.
 - El registro **siempre** crea usuarios con rol `usuario`, sin importar lo que envíe el cliente. Los roles de `usuario`, `cantina` y `huerta` los cambia un administrador desde `/admin/usuarios`. Los roles `admin` están protegidos: la API responde 403 y el panel no muestra el selector para modificarlos.
 - Roles: `admin` (todo), `cantina` (panel + editar menú), `huerta` (panel + editar huerta), `usuario` (sin acceso al panel).
 - El frontend guarda el token en `localStorage` bajo `todos-al-agua.token`, lo decodifica para obtener el rol y calcula los permisos desde `src/auth/permissions.js`.
@@ -154,7 +157,7 @@ Sin sesión, una ruta protegida redirige a `/login`. Con sesión pero sin permis
 ## Deploy
 
 - **Frontend (Vercel):** proyecto conectado a este repo, rama `master`, *Root Directory* `src/frontend/todos-al-agua`, build de Vite con salida `dist/`, variable `VITE_API_URL=https://todos-al-agua-backend.onrender.com`. El archivo `vercel.json` reescribe todas las rutas a `index.html` para que los refrescos de `/admin` funcionen.
-- **Backend (Render):** servicio Node desde `src/backend`, mismo set de variables de entorno que en local, URL pública `https://todos-al-agua-backend.onrender.com`.
+- **Backend (Render):** servicio Node desde `src/backend`, mismo set de variables de entorno que en local (incluyendo `FRONTEND_URL`, `TRUST_PROXY=1` y un `CANTINA_TOKEN` aleatorio propio), URL pública `https://todos-al-agua-backend.onrender.com`. Si rotás el secreto, cerrá las sesiones activas.
 - Cada push a `master` dispara un redeploy automático del frontend.
 
 ## Flujo de Git
@@ -184,7 +187,7 @@ git branch -d < feature-nombre-tarea >
 
 ## Solución de problemas
 
-- **401 al querer entrar:** el JWT venció por inactividad (1 minuto) o es inválido. El frontend cierra la sesión automáticamente y te devuelve a `/login`; iniciá sesión de nuevo. Si el backend está suspendido (Render gratuito), el refresh no puede renovar y la sesión vence al llegar a 1 minuto.
+- **401 al querer entrar:** el JWT venció (15 min), fue revocado o es inválido. El frontend intenta renovarlo una vez; si no puede, cierra la sesión y te devuelve a `/login`. También aparece si superaste el tiempo de inactividad (10 min) o si tu rol fue cambiado en el panel.
 - **"No se pudo conectar con el servidor":** revisar `VITE_API_URL` y que el backend esté activo (en Render el plan gratuito puede suspender el servicio).
 - **404 al recargar `/admin`:** confirmar que `vercel.json` esté en el *Root Directory* configurado en Vercel.
 - **Error de Firebase al arrancar:** revisar las variables `API_KEY`…`APP_ID` y que Firestore esté habilitado.

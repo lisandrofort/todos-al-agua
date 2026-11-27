@@ -7,7 +7,7 @@ import router from "./routes/index.jsx";
 import "./index.css";
 
 // Un solo proveedor: el de la sesión.
-// Los datos (menú y usuarios) los carga el Layout de las rutas.
+// Cada pantalla carga los datos que necesita directamente desde la API.
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>

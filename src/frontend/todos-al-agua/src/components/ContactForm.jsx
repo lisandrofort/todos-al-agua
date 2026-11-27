@@ -14,6 +14,7 @@ export default function ContactForm({ label = "Enviar mensaje" }) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
     setErrors((current) => ({ ...current, [name]: "", general: "" }));
+    setSent(false);
   }
 
   async function handleSubmit(event) {

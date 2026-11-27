@@ -6,13 +6,9 @@ import MenuList from "../components/MenuList";
 import CantinaInfo from "../components/CantinaInfo";
 import CantinaContact from "../components/CantinaContact";
 import Footer from "../components/Footer";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/huerta", label: "Huerta" },
-  { href: "/login", label: "Iniciar sesión" },
-  { href: "/registro", label: "Registrarse" },
-];
+const navLinks = linksPara("cantina");
 
 export default function Cantina() {
   return (

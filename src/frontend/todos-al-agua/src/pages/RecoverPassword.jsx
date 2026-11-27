@@ -6,12 +6,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Logo from "../ui/Logo";
 import { apiAuth } from "../api/client";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-];
+const navLinks = linksPara("recuperar");
 
 export default function RecoverPassword() {
   const [email, setEmail] = useState("");

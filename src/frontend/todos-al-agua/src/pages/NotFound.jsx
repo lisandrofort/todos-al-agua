@@ -5,12 +5,9 @@ import { useAuth } from "../auth/AuthContext";
 import "../theme.css";
 import "../pages/Home.css";
 import "../pages/Admin.css";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-];
+const navLinks = linksPara("404");
 
 export default function NotFound() {
   const location = useLocation();

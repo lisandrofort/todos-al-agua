@@ -6,13 +6,9 @@ import HuertaProducts from "../components/HuertaProducts";
 import HuertaInfo from "../components/HuertaInfo";
 import HuertaContact from "../components/HuertaContact";
 import Footer from "../components/Footer";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/login", label: "Iniciar sesión" },
-  { href: "/registro", label: "Registrarse" },
-];
+const navLinks = linksPara("huerta");
 
 export default function Huerta() {
   return (

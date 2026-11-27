@@ -6,12 +6,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useAuth } from "../auth/AuthContext";
 import { PERMISOS } from "../auth/permissions";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-];
+const navLinks = linksPara("admin");
 
 const TABS = [
   { to: "/admin/usuarios", label: "Usuarios", permiso: PERMISOS.VER_USUARIOS },

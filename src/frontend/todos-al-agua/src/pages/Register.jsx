@@ -7,12 +7,9 @@ import "./Register.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Logo from "../ui/Logo";
+import { linksPara } from "../utils/navLinks";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cantina", label: "Cantina" },
-  { href: "/huerta", label: "Huerta" },
-];
+const navLinks = linksPara("registro");
 
 function validate(values) {
   const errors = {};
