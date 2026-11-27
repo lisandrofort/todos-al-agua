@@ -1,77 +1,60 @@
 .hero-art {
   position: relative;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
   min-height: 480px;
-}
-
-.hero-logo-card {
-  position: relative;
-  width: min(460px, 100%);
-  padding: clamp(24px, 4vw, 42px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow:
-    0 30px 70px rgba(0, 39, 77, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  text-align: center;
 }
 
 .hero-logo-img {
   display: block;
-  width: 100%;
-  max-width: 400px;
+  width: min(460px, 100%);
   height: auto;
-  margin: 0 auto;
   object-fit: contain;
+  /* Halo suave para que el texto negro del logo se lea sobre el azul. */
+  filter:
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.55))
+    drop-shadow(0 16px 26px rgba(0, 39, 77, 0.45));
 }
 
 .hero-logo-caption {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 18px 0 0;
+  margin: 0;
   font-family: var(--font-family-base, sans-serif);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-primary, #0055a5);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 8px rgba(0, 39, 77, 0.5);
 }
 
 .hero-logo-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--color-background, #00a8e8);
+  background: #ffd34d;
 }
 
 @media (max-width: 1000px) {
   .hero-art {
     justify-self: center;
-    width: min(460px, 100%);
-    min-height: 380px;
+    width: min(480px, 100%);
+    min-height: 360px;
   }
 }
 
 @media (max-width: 640px) {
   .hero-art {
-    min-height: 300px;
-  }
-
-  .hero-logo-card {
-    border-radius: 22px;
+    gap: 14px;
+    min-height: 280px;
   }
 
   .hero-logo-caption {
-    margin-top: 12px;
     font-size: 11px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-logo-card {
-    transition: none;
   }
 }
