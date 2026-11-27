@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiUsers, LOGIN_EVENT } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import {
@@ -7,6 +7,7 @@ import {
   ROLES,
   permisosDeRol,
 } from "../../auth/permissions";
+import ConfirmAdminDialog from "./ConfirmAdminDialog";
 const ROLES_DISPONIBLES = [
   ROLES.ADMIN,
   ROLES.CANTINA,
@@ -41,8 +42,11 @@ export default function UsersPanel() {
   const { user, hasPermission, logout } = useAuth();
   const puedeEditarRoles = hasPermission(PERMISOS.EDITAR_ROLES);
   const [error, setError] = useState("");
+  const [confirmacion, setConfirmacion] = useState(null);
 
-  async function handleRoleChange(id, nextRol) {
+  const cancelarConfirmacion = useCallback(() => setConfirmacion(null), []);
+
+  async function aplicarCambioRol(id, nextRol) {
     setError("");
     const target = users.find((current) => current.id === id);
 
@@ -62,6 +66,33 @@ export default function UsersPanel() {
     if (isCurrentUser && !permisosDeRol(nextRol).includes(PERMISOS.ACCESO_ADMIN)) {
       logout();
     }
+  }
+
+  function handleRoleChange(id, nextRol) {
+    const target = users.find((current) => current.id === id);
+
+    // Entregar el rol más alto siempre requiere confirmación explícita.
+    if (
+      nextRol === ROLES.ADMIN &&
+      target &&
+      target.rol !== ROLES.ADMIN
+    ) {
+      setConfirmacion({
+        id,
+        nextRol,
+        nombre: target.nombre,
+        email: target.email,
+      });
+      return;
+    }
+
+    aplicarCambioRol(id, nextRol);
+  }
+
+  function confirmarCambio() {
+    if (!confirmacion) return;
+    aplicarCambioRol(confirmacion.id, confirmacion.nextRol);
+    setConfirmacion(null);
   }
 
   return (
@@ -234,6 +265,12 @@ export default function UsersPanel() {
         Los roles de administrador están protegidos: no se pueden modificar
         desde el panel.
       </p>
+
+      <ConfirmAdminDialog
+        usuario={confirmacion}
+        onConfirmar={confirmarCambio}
+        onCancelar={cancelarConfirmacion}
+      />
     </section>
   );
 }

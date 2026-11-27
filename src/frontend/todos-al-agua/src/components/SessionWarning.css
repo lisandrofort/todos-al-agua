@@ -79,6 +79,15 @@
   background: var(--color-grey);
 }
 
+.session-warning-btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.session-warning-btn-danger:hover {
+  filter: brightness(0.94);
+}
+
 .session-warning-btn:focus-visible {
   outline: 3px solid var(--color-warning);
   outline-offset: 2px;
