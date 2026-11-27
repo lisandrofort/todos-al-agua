@@ -11,6 +11,7 @@ export default function EditorMenu({ menu, setMenu, puedeEditar }) {
     selectedIndex,
     totalItems,
     message,
+    saving,
     categoryScrollRef,
     activeButtonRef,
     setActiveCategory,
@@ -143,20 +144,39 @@ export default function EditorMenu({ menu, setMenu, puedeEditar }) {
           <button className="btn btn-primary" type="button" onClick={addCategory}>
             Agregar categoría
           </button>
-          <button className="btn btn-primary" type="button" onClick={handleSave}>
-            Guardar cambios
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? "Guardando..." : "Guardar cambios"}
           </button>
-          <button className="btn" type="button" onClick={handleDiscard}>
+          <button
+            className="btn"
+            type="button"
+            onClick={handleDiscard}
+            disabled={saving}
+          >
             Descartar cambios
           </button>
-          <button className="btn btn-danger" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-danger"
+            type="button"
+            onClick={handleReset}
+            disabled={saving}
+          >
             Restablecer menú original
           </button>
         </div>
       </fieldset>
 
       {message && (
-        <div className={`admin-toast admin-toast--${message.type}`} role="status" aria-live="polite">
+        <div
+          className={`admin-toast admin-toast--${message.type}`}
+          role={message.type === "error" ? "alert" : "status"}
+          aria-live="polite"
+        >
           {message.text}
         </div>
       )}

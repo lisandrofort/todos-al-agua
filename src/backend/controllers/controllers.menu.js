@@ -2,6 +2,7 @@ const Menu = require("../repositories/repository.menu.js");
 const {
   falla,
   textoRequerido,
+  textoOpcional,
   validarItem,
 } = require("../lib/validacion.js");
 
@@ -40,11 +41,7 @@ async function createCategory(data = {}) {
     items: data.items === undefined ? [] : validarItems(data.items),
   };
   if (data.nota_guarnicion !== undefined) {
-    categoryData.nota_guarnicion = textoRequerido(
-      String(data.nota_guarnicion),
-      "La nota de guarnición no puede estar vacía",
-      300,
-    );
+    categoryData.nota_guarnicion = textoOpcional(data.nota_guarnicion, 300);
   }
 
   const allMenu = new Menu();
@@ -76,9 +73,8 @@ async function updateCategory(id, data = {}) {
     updateData.items = validarItems(updateData.items);
   }
   if (updateData.nota_guarnicion !== undefined) {
-    updateData.nota_guarnicion = textoRequerido(
-      String(updateData.nota_guarnicion),
-      "La nota de guarnición no puede estar vacía",
+    updateData.nota_guarnicion = textoOpcional(
+      updateData.nota_guarnicion,
       300,
     );
   }

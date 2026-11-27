@@ -17,6 +17,14 @@ function textoRequerido(valor, mensaje, max = 200) {
   return valor.trim();
 }
 
+function textoOpcional(valor, max = 200) {
+  const texto = valor === undefined || valor === null ? "" : String(valor).trim();
+  if (texto.length > max) {
+    throw falla(`El texto es demasiado largo (máximo ${max} caracteres)`);
+  }
+  return texto;
+}
+
 function email(valor) {
   const limpio = textoRequerido(valor, "Ingresá un email", 200);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(limpio)) {
@@ -52,11 +60,7 @@ function validarItem(data = {}) {
     item.nombre = textoRequerido(data.nombre, "El nombre del plato es obligatorio", 120);
   }
   if (data.descripcion !== undefined) {
-    item.descripcion = textoRequerido(
-      data.descripcion,
-      "La descripción no puede estar vacía",
-      500,
-    );
+    item.descripcion = textoOpcional(data.descripcion, 500);
   }
   const precioItem = precio(data.precio, "El precio del plato no es válido");
   if (precioItem !== undefined) {
@@ -74,13 +78,17 @@ function validarItem(data = {}) {
     }
   }
   if (data.promocion !== undefined) {
-    item.promocion = textoRequerido(
-      String(data.promocion),
-      "La promoción no puede estar vacía",
-      200,
-    );
+    item.promocion = textoOpcional(data.promocion, 200);
   }
   return item;
 }
 
-module.exports = { falla, textoRequerido, email, clave, precio, validarItem };
+module.exports = {
+  falla,
+  textoRequerido,
+  textoOpcional,
+  email,
+  clave,
+  precio,
+  validarItem,
+};

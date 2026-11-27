@@ -3,10 +3,16 @@ import { apiMenu } from "../../api/client";
 import menuData from "../../data/menu.json";
 import { clone, normalizeForSave, validateMenu } from "../../utils/menuUtils";
 
+function idsDe(menu) {
+  return new Set((menu ?? []).map((c) => c.id).filter(Boolean));
+}
+
 export default function useMenuEditor(menu, setMenu) {
   const [draft, setDraft] = useState(() => clone(menu));
   const [activeCategory, setActiveCategory] = useState(0);
   const [message, setMessage] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const idsOriginales = useRef(idsDe(menu));
   const categoryScrollRef = useRef(null);
   const activeButtonRef = useRef(null);
 
@@ -26,7 +32,6 @@ export default function useMenuEditor(menu, setMenu) {
     });
   }, [selectedIndex]);
 
-  // El mensaje (éxito o error) se limpia solo después de unos segundos.
   useEffect(() => {
     if (!message) return undefined;
     const timer = setTimeout(() => setMessage(null), 3000);
@@ -119,23 +124,42 @@ export default function useMenuEditor(menu, setMenu) {
     setDraft((current) => current.filter((_, i) => i !== index));
   }
 
-  function handleSave() {
+  // Guarda primero y recién después muestra el resultado. Las categorías nuevas
+  // se crean en la API, las borradas se eliminan y se conservan los IDs reales.
+  async function handleSave() {
+    if (saving) return;
     const error = validateMenu(draft);
     if (error) {
       setMessage({ type: "error", text: error });
       return;
     }
 
+    setSaving(true);
+    setMessage({ type: "info", text: "Guardando cambios..." });
     const next = normalizeForSave(draft);
-    setMenu(next);
-    Promise.all(next.map((c) => apiMenu.update(c.id, c))).catch((error) =>
-      console.error("No se pudo guardar el menú:", error.message),
-    );
-    setDraft(clone(next));
-    setMessage({
-      type: "success",
-      text: "✓ Cambios guardados correctamente",
-    });
+
+    try {
+      const guardadas = await Promise.all(
+        next.map(async (category) => {
+          const { id, ...data } = category;
+          return id ? apiMenu.update(id, data) : apiMenu.create(data);
+        }),
+      );
+      const idsGuardados = new Set(guardadas.map((c) => c.id));
+      const borradas = [...idsOriginales.current].filter(
+        (id) => !idsGuardados.has(id),
+      );
+      await Promise.all(borradas.map((id) => apiMenu.remove(id)));
+
+      idsOriginales.current = idsGuardados;
+      setMenu(guardadas);
+      setDraft(clone(guardadas));
+      setMessage({ type: "success", text: "✓ Cambios guardados correctamente" });
+    } catch (e) {
+      setMessage({ type: "error", text: `No se pudo guardar: ${e.message}` });
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleDiscard() {
@@ -143,11 +167,27 @@ export default function useMenuEditor(menu, setMenu) {
     setMessage(null);
   }
 
-  function handleReset() {
-    setMenu(menuData.menu);
-    setDraft(clone(menuData.menu));
-    setActiveCategory(0);
-    setMessage({ type: "success", text: "Menú original restablecido." });
+  // Restablece la carta de ejemplo en el servidor, no solo en la pantalla.
+  async function handleReset() {
+    if (saving) return;
+    setSaving(true);
+    setMessage({ type: "info", text: "Restableciendo el menú..." });
+
+    try {
+      const original = normalizeForSave(menuData.menu);
+      const creadas = await Promise.all(original.map((c) => apiMenu.create(c)));
+      await Promise.all([...idsOriginales.current].map((id) => apiMenu.remove(id)));
+
+      idsOriginales.current = new Set(creadas.map((c) => c.id));
+      setMenu(creadas);
+      setDraft(clone(creadas));
+      setActiveCategory(0);
+      setMessage({ type: "success", text: "Menú original restablecido." });
+    } catch (e) {
+      setMessage({ type: "error", text: `No se pudo restablecer: ${e.message}` });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return {
@@ -156,6 +196,7 @@ export default function useMenuEditor(menu, setMenu) {
     selectedIndex,
     totalItems,
     message,
+    saving,
     categoryScrollRef,
     activeButtonRef,
     setActiveCategory,

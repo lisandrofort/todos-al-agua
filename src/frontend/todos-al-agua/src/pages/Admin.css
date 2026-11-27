@@ -335,6 +335,11 @@
   border-left: 4px solid #fff;
 }
 
+.admin-toast--info {
+  background: var(--color-cantina-blue-dark, #0055a5);
+  border-left: 4px solid #fff;
+}
+
 @keyframes admin-toast-in {
   from {
     opacity: 0;
