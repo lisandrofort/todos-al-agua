@@ -77,6 +77,27 @@ export default function HuertaProducts() {
               <strong>Por pedido:</strong> llamá al 2262-50-9574.
             </li>
           </ul>
+
+          <div className="huerta-map-head">
+            <span>El Samaritano · Calle 14 Nº 2949, Necochea</span>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Calle+14+2949%2C+Necochea%2C+Buenos+Aires%2C+Argentina"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Cómo llegar ↗
+            </a>
+          </div>
+          <div className="huerta-map-wrap">
+            <iframe
+              className="huerta-map"
+              title="Ubicación del vivero Flor de Pan en El Samaritano, Necochea"
+              src="https://www.google.com/maps?q=Calle+14+2949%2C+Necochea%2C+Buenos+Aires%2C+Argentina&z=15&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
         </div>
       </div>
     </section>
