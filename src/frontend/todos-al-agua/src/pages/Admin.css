@@ -280,6 +280,51 @@
   min-width: 96px;
 }
 
+.admin-users-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-user-search {
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+.admin-users-count {
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.admin-pagination .btn {
+  min-height: 38px;
+  padding-inline: 18px;
+  font-size: 13px;
+}
+
+.admin-pagination .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.admin-pagination span {
+  color: var(--admin-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .admin-select:focus-visible,
 .admin-input:focus-visible {
   outline: 3px solid var(--admin-focus);

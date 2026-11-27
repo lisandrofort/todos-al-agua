@@ -14,6 +14,7 @@ const ROLES_DISPONIBLES = [
   ROLES.HUERTA,
   ROLES.USUARIO,
 ];
+const POR_PAGINA = 5;
 
 export default function UsersPanel() {
   // La lista de usuarios se trae sola al abrir el panel.
@@ -43,6 +44,8 @@ export default function UsersPanel() {
   const puedeEditarRoles = hasPermission(PERMISOS.EDITAR_ROLES);
   const [error, setError] = useState("");
   const [confirmacion, setConfirmacion] = useState(null);
+  const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
 
   const cancelarConfirmacion = useCallback(() => setConfirmacion(null), []);
 
@@ -138,6 +141,27 @@ export default function UsersPanel() {
       ? "Sí, dar rol de administrador"
       : "Sí, eliminar usuario";
 
+  const filtro = busqueda.trim().toLowerCase();
+  const usuariosFiltrados = filtro
+    ? users.filter((u) =>
+        `${u.nombre ?? ""} ${u.email ?? ""}`.toLowerCase().includes(filtro),
+      )
+    : users;
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(usuariosFiltrados.length / POR_PAGINA),
+  );
+  const paginaActual = Math.min(pagina, totalPaginas);
+  const usuariosVisibles = usuariosFiltrados.slice(
+    (paginaActual - 1) * POR_PAGINA,
+    paginaActual * POR_PAGINA,
+  );
+
+  function cambiarBusqueda(event) {
+    setBusqueda(event.target.value);
+    setPagina(1);
+  }
+
   return (
     <section>
       <h2 className="admin-panel-title">Usuarios y permisos</h2>
@@ -155,6 +179,20 @@ export default function UsersPanel() {
         </p>
       )}
 
+      <div className="admin-users-toolbar">
+        <input
+          className="admin-input admin-user-search"
+          type="search"
+          placeholder="Buscar por nombre o email"
+          aria-label="Buscar usuarios por nombre o email"
+          value={busqueda}
+          onChange={cambiarBusqueda}
+        />
+        <span className="admin-users-count" role="status">
+          {usuariosFiltrados.length} {usuariosFiltrados.length === 1 ? "usuario" : "usuarios"}
+        </span>
+      </div>
+
       <div className="admin-table-wrap admin-table-desktop">
         <table className="admin-table">
           <thead>
@@ -167,7 +205,7 @@ export default function UsersPanel() {
             </tr>
           </thead>
           <tbody>
-            {users.map((current) => {
+            {usuariosVisibles.map((current) => {
               const isCurrentUser =
                 current.email.toLowerCase() === user?.email?.toLowerCase();
               const permisos = permisosDeRol(current.rol);
@@ -248,7 +286,7 @@ export default function UsersPanel() {
       </div>
 
       <div className="admin-user-cards">
-        {users.map((current) => {
+        {usuariosVisibles.map((current) => {
           const isCurrentUser =
             current.email.toLowerCase() === user?.email?.toLowerCase();
           const permisos = permisosDeRol(current.rol);
@@ -327,6 +365,36 @@ export default function UsersPanel() {
           );
         })}
       </div>
+
+      {usuariosFiltrados.length === 0 && (
+        <p className="admin-note">
+          No se encontraron usuarios con “{busqueda}”.
+        </p>
+      )}
+
+      {totalPaginas > 1 && (
+        <div className="admin-pagination">
+          <button
+            className="btn"
+            type="button"
+            onClick={() => setPagina(paginaActual - 1)}
+            disabled={paginaActual === 1}
+          >
+            Anterior
+          </button>
+          <span role="status">
+            Página {paginaActual} de {totalPaginas}
+          </span>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => setPagina(paginaActual + 1)}
+            disabled={paginaActual === totalPaginas}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
 
       <p className="admin-note">
         Los roles de administrador están protegidos: no se pueden modificar
