@@ -1,4 +1,3 @@
-import { WavesIcon } from "./icons";
 import "./Logo.css";
 
 export default function Logo({
@@ -11,9 +10,13 @@ export default function Logo({
 
   const content = (
     <>
-      <span className="brand-mark">
-        <WavesIcon />
-      </span>
+      <img
+        className="brand-logo"
+        src="/asociacion-civil-todos-al-agua-transparente.png"
+        alt=""
+        width="432"
+        height="260"
+      />
       <span className="brand-text">
         <strong>{title}</strong>
         <small>{subtitle}</small>
