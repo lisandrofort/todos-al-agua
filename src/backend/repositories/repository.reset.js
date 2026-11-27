@@ -10,7 +10,8 @@ function hashToken(token) {
 
 async function create(userId, token) {
   const now = Date.now();
-  const docRef = await admin.collection(COLLECTION).add({
+  const docRef = admin.collection(COLLECTION).doc(hashToken(token));
+  await docRef.set({
     userId,
     tokenHash: hashToken(token),
     createdAt: now,
@@ -21,24 +22,50 @@ async function create(userId, token) {
 }
 
 async function findValid(token) {
-  const snapshot = await admin
-    .collection(COLLECTION)
-    .where("tokenHash", "==", hashToken(token))
-    .where("used", "==", false)
-    .limit(1)
-    .get();
+  const hash = hashToken(token);
+  // Los tokens nuevos usan el hash como ID (lectura directa); la query cubre
+  // los documentos creados antes de ese cambio.
+  let doc = await admin.collection(COLLECTION).doc(hash).get();
+  if (!doc.exists) {
+    const snapshot = await admin
+      .collection(COLLECTION)
+      .where("tokenHash", "==", hash)
+      .limit(1)
+      .get();
+    if (snapshot.empty) return null;
+    doc = snapshot.docs[0];
+  }
 
-  if (snapshot.empty) return null;
-
-  const doc = snapshot.docs[0];
   const data = doc.data();
-  if (!data.expiresAt || Date.now() > data.expiresAt) return null;
+  if (data.used || !data.expiresAt || Date.now() > data.expiresAt) return null;
 
   return { id: doc.id, ...data };
 }
 
-async function markUsed(id) {
-  await admin.collection(COLLECTION).doc(id).update({ used: true, usedAt: Date.now() });
+// Consumir el token y cambiar la contraseña en una sola transacción: dos
+// peticiones concurrentes con el mismo link no pueden aplicar el cambio dos veces.
+async function consumeAndChangePassword(resetId, userId, hashedPass) {
+  const resetRef = admin.collection(COLLECTION).doc(resetId);
+  const userRef = admin.collection("users").doc(userId);
+
+  return admin.runTransaction(async (transaction) => {
+    const [resetDoc, userDoc] = await Promise.all([
+      transaction.get(resetRef),
+      transaction.get(userRef),
+    ]);
+    if (!resetDoc.exists || !userDoc.exists) {
+      return false;
+    }
+
+    const data = resetDoc.data();
+    if (data.used || !data.expiresAt || Date.now() > data.expiresAt) {
+      return false;
+    }
+
+    transaction.update(resetRef, { used: true, usedAt: Date.now() });
+    transaction.update(userRef, { pass: hashedPass });
+    return true;
+  });
 }
 
 async function invalidateForUser(userId) {
@@ -53,4 +80,9 @@ async function invalidateForUser(userId) {
   );
 }
 
-module.exports = { create, findValid, markUsed, invalidateForUser };
+module.exports = {
+  create,
+  findValid,
+  consumeAndChangePassword,
+  invalidateForUser,
+};

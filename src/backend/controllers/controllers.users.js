@@ -185,16 +185,17 @@ async function resetPassword(token, password) {
     throw error;
   }
 
-  const user = await new User().getById(reset.userId);
-  if (!user) {
+  const pass = await encryptWord(password);
+  const aplicado = await Reset.consumeAndChangePassword(
+    reset.id,
+    reset.userId,
+    pass,
+  );
+  if (!aplicado) {
     const error = new Error("El link es inválido o venció");
     error.status = 400;
     throw error;
   }
-
-  await new User().update(user.id, { pass: await encryptWord(password) });
-  await Reset.markUsed(reset.id);
-  await Reset.invalidateForUser(user.id);
 
   return { message: "Contraseña actualizada. Ya podés iniciar sesión." };
 }

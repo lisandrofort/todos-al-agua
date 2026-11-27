@@ -109,29 +109,53 @@ class User {
   }
 
   async update(id, data) {
-    const current = await this.getById(id);
     const updateData = data.email
       ? { ...data, email: normalizeEmail(data.email) }
       : data;
 
-    if (
-      current &&
-      updateData.email &&
-      updateData.email !== normalizeEmail(current.email)
-    ) {
-      const batch = admin.batch();
-      batch.update(this.collection.doc(id), updateData);
-      batch.delete(
-        admin.collection("user_emails").doc(normalizeEmail(current.email)),
-      );
-      batch.set(admin.collection("user_emails").doc(updateData.email), {
-        userId: id,
-        createdAt: Date.now(),
+    if (updateData.email) {
+      // La reserva del email nuevo se verifica dentro de la transacción:
+      // nunca se sobrescribe la reserva de otro usuario.
+      const emailNormalizado = updateData.email;
+      const userRef = this.collection.doc(id);
+      const nuevaReserva = admin.collection("user_emails").doc(emailNormalizado);
+
+      return admin.runTransaction(async (transaction) => {
+        const userDoc = await transaction.get(userRef);
+        if (!userDoc.exists) {
+          return null;
+        }
+
+        const reserva = await transaction.get(nuevaReserva);
+        if (reserva.exists && reserva.data()?.userId !== id) {
+          const error = new Error("Ya hay un registro con este email");
+          error.status = 409;
+          throw error;
+        }
+
+        const emailAnterior = normalizeEmail(userDoc.data().email);
+        if (emailAnterior && emailAnterior !== emailNormalizado) {
+          transaction.delete(
+            admin.collection("user_emails").doc(emailAnterior),
+          );
+        }
+
+        transaction.set(userRef, updateData, { merge: true });
+        transaction.set(
+          nuevaReserva,
+          { userId: id, createdAt: Date.now() },
+          { merge: true },
+        );
+        return { id, ...userDoc.data(), ...updateData };
       });
-      await batch.commit();
-    } else {
-      await this.collection.doc(id).update(updateData);
     }
+
+    const userRef = this.collection.doc(id);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      return null;
+    }
+    await userRef.update(updateData);
 
     const doc = await this.collection.doc(id).get();
     if (!doc.exists) {
