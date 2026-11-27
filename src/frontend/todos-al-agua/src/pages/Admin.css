@@ -293,6 +293,28 @@
   max-width: 360px;
 }
 
+.admin-input.admin-user-search {
+  min-height: 34px;
+  padding: 4px 2px;
+  border: 0;
+  border-bottom: 1px dashed var(--admin-line-strong);
+  border-radius: 0;
+  background: transparent;
+}
+
+.admin-input.admin-user-search::placeholder {
+  color: var(--admin-muted);
+}
+
+.admin-input.admin-user-search:hover {
+  border-bottom-color: var(--admin-accent);
+}
+
+.admin-input.admin-user-search:focus-visible {
+  outline: none;
+  border-bottom: 1px solid var(--admin-focus);
+}
+
 .admin-users-count {
   color: var(--admin-muted);
   font-size: 12px;
