@@ -2,8 +2,20 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "../auth/AuthContext";
 import "./SessionWarning.css";
 
+function formatearTiempo(segundos) {
+  const total = Math.max(0, segundos);
+  const minutos = Math.floor(total / 60);
+  const seg = total % 60;
+  return `${minutos}:${String(seg).padStart(2, "0")}`;
+}
+
 export default function SessionWarning() {
-  const { showSessionWarning, extendSession, logout } = useAuth();
+  const {
+    showSessionWarning,
+    segundosRestantes,
+    extendSession,
+    logout,
+  } = useAuth();
   const dialogRef = useRef(null);
   const primaryRef = useRef(null);
 
@@ -54,6 +66,16 @@ export default function SessionWarning() {
         <p id="session-warning-description">
           Tu sesión se cierra por inactividad en unos segundos.
         </p>
+        <p className="session-warning-timer" role="timer" aria-live="off">
+          Se cierra en <strong>{formatearTiempo(segundosRestantes)}</strong>
+        </p>
+        <div className="session-warning-progress" aria-hidden="true">
+          <span
+            style={{
+              width: `${Math.max(0, Math.min(100, segundosRestantes))}%`,
+            }}
+          />
+        </div>
         <div className="session-warning-actions">
           <button
             ref={primaryRef}

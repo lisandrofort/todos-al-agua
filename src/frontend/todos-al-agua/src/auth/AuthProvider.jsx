@@ -39,7 +39,7 @@ export default function AuthProvider({ children }) {
     setSessionExpired(true);
   }, []);
 
-  const { mostrarAviso, extendSession } = useSesion({
+  const { mostrarAviso, segundosRestantes, extendSession } = useSesion({
     user,
     setUser,
     logout: expirarSesion,
@@ -82,6 +82,7 @@ export default function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       hasPermission,
       showSessionWarning: mostrarAviso,
+      segundosRestantes,
       extendSession,
     }),
     [
@@ -92,6 +93,7 @@ export default function AuthProvider({ children }) {
       sessionExpired,
       hasPermission,
       mostrarAviso,
+      segundosRestantes,
       extendSession,
     ],
   );

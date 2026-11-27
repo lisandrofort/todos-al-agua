@@ -13,11 +13,13 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
   const ultimoGuardado = useRef(0);
   const sesionIniciada = useRef(false);
   const [mostrarAviso, setMostrarAviso] = useState(false);
+  const [segundosRestantes, setSegundosRestantes] = useState(0);
 
   const marcarActividad = useCallback(() => {
     const ahora = Date.now();
     ultimaActividad.current = ahora;
     setMostrarAviso(false);
+    setSegundosRestantes(0);
     // Escribir en localStorage dispara el evento "storage" en las otras pestañas.
     if (ahora - ultimoGuardado.current > 1000) {
       ultimoGuardado.current = ahora;
@@ -120,6 +122,10 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
         cerrarYVolverAlInicio();
       } else if (tiempoInactivo >= AVISO_MS) {
         setMostrarAviso(true);
+        // El modal dura CIERRE_MS - AVISO_MS (100 s); mostramos ese tramo.
+        setSegundosRestantes(
+          Math.max(0, Math.ceil((CIERRE_MS - tiempoInactivo) / 1000)),
+        );
       }
     }, 1000);
 
@@ -150,5 +156,5 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
     return () => window.removeEventListener("storage", alCambiar);
   }, [setUser, cerrarSesion, setSessionExpired]);
 
-  return { mostrarAviso, extendSession };
+  return { mostrarAviso, segundosRestantes, extendSession };
 }
