@@ -103,10 +103,11 @@ export default function HomeSideCards() {
     const viewport = viewportRef.current;
     if (!viewport) return undefined;
 
-    // ?animar=1 permite ver el movimiento aunque el sistema pida menos animación.
-    const sinMovimiento =
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-      !window.location.search.includes("animar=1");
+    // Si el sistema pide menos movimiento, el giro se hace más lento,
+    // pero las cards siguen rotando (el scroll manual siempre funciona).
+    const velocidad = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? 6
+      : VELOCIDAD;
 
     let frame;
     let anterior = performance.now();
@@ -122,8 +123,8 @@ export default function HomeSideCards() {
     function avanzar(ahora) {
       const delta = ahora - anterior;
       anterior = ahora;
-      if (!pausedRef.current && !sinMovimiento) {
-        ajustar(positionRef.current + (delta / 1000) * VELOCIDAD);
+      if (!pausedRef.current) {
+        ajustar(positionRef.current + (delta / 1000) * velocidad);
       }
       frame = requestAnimationFrame(avanzar);
     }
