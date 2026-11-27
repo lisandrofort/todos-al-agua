@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { visibleNavLinks } from "../utils/navLinks";
-import { WavesIcon } from "../ui/icons";
 import "./Footer.css";
 
 export default function Footer({ links }) {
@@ -16,9 +15,13 @@ export default function Footer({ links }) {
     <footer className="home-footer">
       <div className="container footer-inner">
         <p className="footer-brand">
-          <span>
-            <WavesIcon />
-          </span>
+          <img
+            className="footer-logo"
+            src="/asociacion-civil-todos-al-agua-transparente.png"
+            alt="Asociación Civil Todos al Agua Necochea"
+            width="432"
+            height="260"
+          />
           Todos al Agua Necochea
         </p>
 
