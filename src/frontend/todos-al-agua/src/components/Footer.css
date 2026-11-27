@@ -26,10 +26,12 @@
   width: 74px;
   height: auto;
   flex: none;
-  padding: 4px;
-  border-radius: 9px;
-  background: #fff;
   object-fit: contain;
+  /* Halo claro para que el texto negro se lea sobre el pie oscuro,
+     sin necesidad de un recuadro blanco. */
+  filter:
+    drop-shadow(0 0 3px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
 }
 
 .footer-nav {
