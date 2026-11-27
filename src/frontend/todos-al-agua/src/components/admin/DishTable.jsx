@@ -14,10 +14,11 @@ export default function DishTable({ items, onChange, onSizeChange, onRemove }) {
         </thead>
         <tbody>
           {items.map((item, index) => (
-            <tr key={index}>
+            <tr key={item.id ?? `plato-${index}`}>
               <DishFields
                 item={item}
                 index={index}
+                variant="tabla"
                 onChange={(patch) => onChange(index, patch)}
                 onSizeChange={(size, value) => onSizeChange(index, size, value)}
               >

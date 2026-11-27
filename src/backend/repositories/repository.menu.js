@@ -1,19 +1,26 @@
-const { admin } = require('../lib/firebase');
+const { admin } = require("../lib/firebase");
+
+// Los documentos creados antes de existir el ID de plato no lo tienen: se les
+// asigna uno estable en memoria. Al guardar la categoría, el ID se persiste.
+function conIds(categoria) {
+  const items = (categoria.items ?? []).map((item, index) => ({
+    ...item,
+    id: item.id ?? `${categoria.id}-item-${index}`,
+  }));
+  return { ...categoria, items };
+}
 
 class Menu {
   constructor() {
     this.db = admin;
-    this.collection = this.db.collection('menu');
+    this.collection = this.db.collection("menu");
   }
 
   async getAll() {
     const snapshot = await this.collection.get();
     const menuItems = [];
     snapshot.forEach((doc) => {
-      menuItems.push({
-        id: doc.id,
-        ...doc.data(),
-      });
+      menuItems.push(conIds({ id: doc.id, ...doc.data() }));
     });
     return menuItems;
   }
@@ -23,19 +30,13 @@ class Menu {
     if (!doc.exists) {
       return null;
     }
-    return {
-      id: doc.id,
-      ...doc.data(),
-    };
+    return conIds({ id: doc.id, ...doc.data() });
   }
 
   async create(data) {
     const docRef = await this.collection.add(data);
     const doc = await docRef.get();
-    return {
-      id: doc.id,
-      ...doc.data(),
-    };
+    return conIds({ id: doc.id, ...doc.data() });
   }
 
   async update(id, data) {
@@ -44,10 +45,7 @@ class Menu {
     if (!doc.exists) {
       return null;
     }
-    return {
-      id: doc.id,
-      ...doc.data(),
-    };
+    return conIds({ id: doc.id, ...doc.data() });
   }
 
   async delete(id) {

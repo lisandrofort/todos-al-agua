@@ -88,7 +88,12 @@ export default function useMenuEditor(menu, setMenu) {
               ...category,
               items: [
                 ...(category.items ?? []),
-                { nombre: "", descripcion: "", precio: "" },
+                {
+                  id: globalThis.crypto?.randomUUID?.() ?? `plato-${Date.now()}`,
+                  nombre: "",
+                  descripcion: "",
+                  precio: "",
+                },
               ],
             }
           : category,

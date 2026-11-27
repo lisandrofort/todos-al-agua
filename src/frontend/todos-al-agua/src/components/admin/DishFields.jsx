@@ -11,14 +11,14 @@ function PriceInput({ value, ariaLabel, onChange }) {
   );
 }
 
-function SizePrices({ precios, nombre, onSizeChange }) {
+function SizePrices({ precios, nombre, variante, onSizeChange }) {
   return (
     <div className="admin-price-pair">
       <label>
         <span>Chica</span>
         <PriceInput
           value={precios.chica}
-          ariaLabel={`Precio chico de ${nombre}`}
+          ariaLabel={`Precio chico de ${nombre} (${variante})`}
           onChange={(value) => onSizeChange("chica", value)}
         />
       </label>
@@ -26,7 +26,7 @@ function SizePrices({ precios, nombre, onSizeChange }) {
         <span>Grande</span>
         <PriceInput
           value={precios.grande}
-          ariaLabel={`Precio grande de ${nombre}`}
+          ariaLabel={`Precio grande de ${nombre} (${variante})`}
           onChange={(value) => onSizeChange("grande", value)}
         />
       </label>
@@ -40,12 +40,14 @@ export default function DishFields({
   onChange,
   onSizeChange,
   withLabels = false,
+  variant = "editor",
   children,
 }) {
+  const variante = variant === "tarjeta" ? "tarjeta" : "tabla";
   const name = (
     <input
       className="admin-input admin-input--small"
-      aria-label={`Nombre del plato ${index + 1}`}
+      aria-label={`Nombre del plato ${index + 1} (${variante})`}
       placeholder="Nombre del plato"
       value={item.nombre}
       onChange={(event) => onChange({ nombre: event.target.value })}
@@ -55,7 +57,7 @@ export default function DishFields({
   const descriptionInput = (
     <input
       className="admin-input admin-input--small"
-      aria-label={`Descripción de ${item.nombre}`}
+      aria-label={`Descripción de ${item.nombre} (${variante})`}
       placeholder="Descripción"
       value={item.descripcion ?? ""}
       onChange={(event) => onChange({ descripcion: event.target.value })}
@@ -65,7 +67,7 @@ export default function DishFields({
   const promotionInput = (
     <input
       className="admin-input admin-input--small"
-      aria-label={`Promoción de ${item.nombre}`}
+      aria-label={`Promoción de ${item.nombre} (${variante})`}
       placeholder="Promoción (opcional)"
       value={item.promocion ?? ""}
       onChange={(event) => onChange({ promocion: event.target.value })}
@@ -95,7 +97,7 @@ export default function DishFields({
       className="admin-input admin-input--small"
       type="number"
       min="0"
-      aria-label={`Precio de ${item.nombre}`}
+      aria-label={`Precio de ${item.nombre} (${variante})`}
       value={item.precio ?? ""}
       onChange={(event) => onChange({ precio: event.target.value })}
     />
@@ -105,6 +107,7 @@ export default function DishFields({
     <SizePrices
       precios={item.precios}
       nombre={item.nombre}
+      variante={variante}
       onSizeChange={onSizeChange}
     />
   ) : withLabels ? (

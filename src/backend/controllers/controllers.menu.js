@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const Menu = require("../repositories/repository.menu.js");
 const {
   falla,
@@ -16,7 +17,17 @@ function validarItems(items) {
   if (!Array.isArray(items)) {
     throw falla("Los items deben ser un array");
   }
-  return items.map((item) => validarItem(item));
+  return items.map((item) => ({
+    ...validarItem(item),
+    id: item.id ?? crypto.randomUUID(),
+  }));
+}
+
+function indiceItem(items, identificador) {
+  const buscado = normalize(identificador);
+  return items.findIndex(
+    (item) => item.id === identificador || normalize(item.nombre) === buscado,
+  );
 }
 
 async function getFullMenu() {
@@ -101,7 +112,7 @@ async function addItem(id, data = {}) {
     return null;
   }
 
-  const item = validarItem(data);
+  const item = { ...validarItem(data), id: data.id ?? crypto.randomUUID() };
   if (!item.nombre) {
     throw falla("El nombre del plato es obligatorio");
   }
@@ -130,9 +141,7 @@ async function updateItem(id, itemName, data = {}) {
   }
 
   const items = categoryFound.items ?? [];
-  const itemIndex = items.findIndex(
-    (current) => normalize(current.nombre) === normalize(itemName),
-  );
+  const itemIndex = indiceItem(items, itemName);
   if (itemIndex === -1) {
     return null;
   }
@@ -164,9 +173,7 @@ async function deleteItem(id, itemName) {
   }
 
   const items = categoryFound.items ?? [];
-  const itemIndex = items.findIndex(
-    (current) => normalize(current.nombre) === normalize(itemName),
-  );
+  const itemIndex = indiceItem(items, itemName);
   if (itemIndex === -1) {
     return null;
   }

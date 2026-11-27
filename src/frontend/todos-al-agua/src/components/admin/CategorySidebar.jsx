@@ -18,7 +18,7 @@ export default function CategorySidebar({
                 ? "admin-category-item is-active"
                 : "admin-category-item"
             }
-            key={index}
+            key={category.id ?? `categoria-${index}`}
             type="button"
             onClick={() => onSelect(index)}
           >

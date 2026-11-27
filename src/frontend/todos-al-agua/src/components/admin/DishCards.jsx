@@ -8,10 +8,11 @@ export default function DishCards({ items, onChange, onSizeChange, onRemove }) {
   return (
     <div className="admin-dish-cards">
       {items.map((item, index) => (
-        <article className="admin-dish-card" key={index}>
+        <article className="admin-dish-card" key={item.id ?? `plato-${index}`}>
           <DishFields
             item={item}
             index={index}
+            variant="tarjeta"
             withLabels
             onChange={(patch) => onChange(index, patch)}
             onSizeChange={(size, value) => onSizeChange(index, size, value)}

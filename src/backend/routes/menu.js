@@ -76,14 +76,14 @@ menuRouter.post("/:id/items", middlewareToken, adminOnly, async (req, res, next)
 });
 
 menuRouter.put(
-  "/:id/items/:itemName",
+  "/:id/items/:itemId",
   middlewareToken,
   adminOnly,
   async (req, res, next) => {
     try {
       const item = await menuController.updateItem(
         req.params.id,
-        req.params.itemName,
+        req.params.itemId,
         req.body ?? {},
       );
       if (!item) {
@@ -97,14 +97,14 @@ menuRouter.put(
 );
 
 menuRouter.delete(
-  "/:id/items/:itemName",
+  "/:id/items/:itemId",
   middlewareToken,
   adminOnly,
   async (req, res, next) => {
     try {
       const deleted = await menuController.deleteItem(
         req.params.id,
-        req.params.itemName,
+        req.params.itemId,
       );
       if (!deleted) {
         return res.status(404).json({ error: "Categoría o plato no encontrado" });
