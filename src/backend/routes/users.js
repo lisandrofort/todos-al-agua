@@ -43,9 +43,13 @@ userRouter.post('/login', async (req, res) => {
     }
 })
 
-userRouter.post('/refresh', middlewareToken, (req, res) => {
+userRouter.post('/refresh', middlewareToken, async (req, res) => {
     try {
-        res.json({ token: userController.refreshSession(req.dataUser) });
+        const token = await userController.refreshSession(req.dataUser);
+        if (!token) {
+            return res.status(401).json({ error: "Tu sesión no es válida" });
+        }
+        res.json({ token });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

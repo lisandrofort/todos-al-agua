@@ -71,12 +71,18 @@ function signSession({ id, email, name, rol }) {
   });
 }
 
-function refreshSession(dataUser) {
+async function refreshSession(dataUser) {
+  // Se relee el usuario: si fue borrado o cambiado de rol, el token nuevo
+  // refleja el estado actual en vez de perpetuar el payload anterior.
+  const user = await new User().getById(dataUser?.id);
+  if (!user) {
+    return null;
+  }
   return signSession({
-    id: dataUser.id,
-    email: dataUser.email,
-    name: dataUser.name ?? dataUser.nombre,
-    rol: dataUser.rol ?? ROL_POR_DEFECTO,
+    id: user.id,
+    email: user.email,
+    name: user.name ?? user.nombre,
+    rol: user.rol ?? ROL_POR_DEFECTO,
   });
 }
 
