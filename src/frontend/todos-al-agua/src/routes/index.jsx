@@ -11,7 +11,7 @@ import AdminIndex from "../pages/AdminIndex";
 import UsersPanel from "../components/admin/UsersPanel";
 import MenuPanel from "../components/admin/MenuPanel";
 import HuertaPanel from "../components/admin/HuertaPanel";
-import AyudaPanel from "../components/admin/AyudaPanel";
+import GuiaAdmin from "../pages/GuiaAdmin";
 import ProtectedRoute from "./ProtectedRoute";
 import GuestRoute from "./GuestRoute";
 import NotFound from "../pages/NotFound";
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute requiredPermission={PERMISOS.EDITAR_HUERTA} />,
                 children: [{ path: "huerta", element: <HuertaPanel /> }],
               },
-              { path: "ayuda", element: <AyudaPanel /> },
+              { path: "ayuda", element: <GuiaAdmin /> },
             ],
           },
         ],
