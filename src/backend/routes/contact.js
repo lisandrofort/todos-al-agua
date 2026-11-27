@@ -2,11 +2,11 @@ const express = require("express");
 const contactController = require("../controllers/controllers.contact.js");
 
 const contactRouter = express.Router();
+const { limitarContacto } = require("../lib/rateLimit.js");
 
-contactRouter.post("/", async (req, res) => {
+contactRouter.post("/", limitarContacto, async (req, res) => {
   try {
-    const ip = req.ip ?? req.socket?.remoteAddress;
-    res.json(await contactController.sendContactMessage(req.body ?? {}, ip));
+    res.json(await contactController.sendContactMessage(req.body ?? {}));
   } catch (e) {
     res.status(e.status || 500).json({ error: e.message });
   }

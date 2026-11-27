@@ -1,9 +1,6 @@
 const { sendEmail } = require("../lib/mail.js");
 
 const DESTINATARIO = () => process.env.CONTACT_TO_EMAIL ?? "hola@todosalagua.com.ar";
-const LIMITE_POR_IP = 5;
-const VENTANA_MS = 10 * 60 * 1000;
-const intentosPorIp = new Map();
 
 function validar({ nombre, email, mensaje }) {
   if (!nombre || !nombre.trim()) return "Ingresá tu nombre";
@@ -24,26 +21,11 @@ function escapar(texto) {
     .replace(/"/g, "&quot;");
 }
 
-function excedioLimite(ip) {
-  const ahora = Date.now();
-  const registro = intentosPorIp.get(ip) ?? [];
-  const recientes = registro.filter((t) => ahora - t < VENTANA_MS);
-  intentosPorIp.set(ip, recientes);
-  if (recientes.length >= LIMITE_POR_IP) return true;
-  recientes.push(ahora);
-  return false;
-}
-
-async function sendContactMessage(data, ip) {
+async function sendContactMessage(data) {
   const error = validar(data ?? {});
   if (error) {
     const e = new Error(error);
     e.status = 400;
-    throw e;
-  }
-  if (excedioLimite(ip ?? "desconocida")) {
-    const e = new Error("Demasiados mensajes. Intentá de nuevo en unos minutos");
-    e.status = 429;
     throw e;
   }
 

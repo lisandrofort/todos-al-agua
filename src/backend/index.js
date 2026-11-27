@@ -11,6 +11,15 @@ function main() {
   const port = process.env.PORT || 3000;
   const { frontendUrl } = configuracion();
 
+  // Detrás de Render, req.ip viene de X-Forwarded-For. Solo se confía si se
+  // configuró explícitamente (TRUST_PROXY=1 o true).
+  if (process.env.TRUST_PROXY) {
+    app.set(
+      "trust proxy",
+      process.env.TRUST_PROXY === "true" ? true : Number(process.env.TRUST_PROXY),
+    );
+  }
+
   app.use(express.json());
 
   app.use((req, res, next) => {

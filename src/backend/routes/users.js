@@ -2,6 +2,7 @@ const express = require("express")
 const userRouter = express.Router()
 const userController = require("../controllers/controllers.users.js")
 const { adminOnly,middlewareToken } = require("../middlewares/middleware.user.js")
+const { limitarLogin, limitarRegistro, limitarRecuperacion, limitarReset, limitarExists } = require("../lib/rateLimit.js")
 
 userRouter.get('/', middlewareToken, adminOnly, async (req, res) => {
     try {
@@ -12,7 +13,7 @@ userRouter.get('/', middlewareToken, adminOnly, async (req, res) => {
     }
 })
 
-userRouter.get('/exists', async (req, res) => {
+userRouter.get('/exists', limitarExists, async (req, res) => {
     try {
         res.json(await userController.emailExists(req.query.email));
     } catch (e) {
@@ -20,7 +21,7 @@ userRouter.get('/exists', async (req, res) => {
     }
 })
 
-userRouter.post('/register', async (req, res) => {
+userRouter.post('/register', limitarRegistro, async (req, res) => {
     try {
         const { name, password, email } = req.body;
         const response = await userController.createUser(name, password, email);
@@ -30,7 +31,7 @@ userRouter.post('/register', async (req, res) => {
     }
 })
 
-userRouter.post('/login', async (req, res) => {
+userRouter.post('/login', limitarLogin, async (req, res) => {
     try {
         const { password, email } = req.body;
         const token = await userController.verifyUser(email, password);
@@ -55,7 +56,7 @@ userRouter.post('/refresh', middlewareToken, async (req, res) => {
     }
 })
 
-userRouter.post('/forgot-password', async (req, res) => {
+userRouter.post('/forgot-password', limitarRecuperacion, async (req, res) => {
     try {
         const { email } = req.body ?? {};
         res.json(await userController.requestPasswordReset(email));
@@ -64,7 +65,7 @@ userRouter.post('/forgot-password', async (req, res) => {
     }
 })
 
-userRouter.post('/reset-password', async (req, res) => {
+userRouter.post('/reset-password', limitarReset, async (req, res) => {
     try {
         const { token, password } = req.body ?? {};
         res.json(await userController.resetPassword(token, password));
