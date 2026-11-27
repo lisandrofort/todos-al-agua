@@ -12,6 +12,34 @@ export default function HuertaProducts() {
           description="Plantines, semillas y panificados sin TACC del proyecto Flor de Pan. No publicamos precios: consultalos directamente según temporada y disponibilidad."
         />
 
+        <div className="huerta-fotos">
+          <figure>
+            <img
+              src="/huerta/vivero-1.jpg"
+              alt="Plantas y suculentas en el vivero de Flor de Pan"
+            />
+            <figcaption>
+              Plantines y flores de estación en el vivero ·{" "}
+              <a
+                href="https://necocheadigital.com/nota/117413/abren-el-vivero-y-la-huerta-de-flor-de-pan-como-espacio-comunitario/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Necochea Digital ↗
+              </a>
+            </figcaption>
+          </figure>
+          <figure>
+            <img
+              src="/huerta/vivero-2.jpg"
+              alt="Joven trabajando en la huerta del proyecto Flor de Pan"
+            />
+            <figcaption>
+              El vivero abre los viernes de 10 a 12 hs en El Samaritano
+            </figcaption>
+          </figure>
+        </div>
+
         <div className="huerta-grid">
           {categories.map((category) => (
             <article className="huerta-category" key={category.categoria}>
@@ -37,8 +65,8 @@ export default function HuertaProducts() {
           <h3>¿Dónde los encontrás?</h3>
           <ul>
             <li>
-              <strong>Vivero:</strong> viernes desde las 10:00, Calle 14 casi 59
-              (Barrio Puerto).
+              <strong>Vivero:</strong> viernes de 10:00 a 12:00, Calle 14 Nº
+              2949 (El Samaritano, Barrio Puerto).
             </li>
             <li>
               <strong>Panificados:</strong> fines de semana y feriados en la

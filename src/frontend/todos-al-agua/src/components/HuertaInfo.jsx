@@ -11,8 +11,8 @@ const features = [
 ];
 
 const schedule = [
-  { label: "Vivero", value: "Viernes desde las 10:00" },
-  { label: "Dirección", value: "Calle 14 casi 59" },
+  { label: "Vivero", value: "Viernes de 10:00 a 12:00" },
+  { label: "Dirección", value: "Calle 14 Nº 2949, El Samaritano" },
   { label: "Panificados", value: "Feria 4 Estaciones, fines de semana y feriados" },
 ];
 

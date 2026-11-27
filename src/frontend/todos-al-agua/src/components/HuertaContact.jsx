@@ -8,7 +8,7 @@ const contactItems = [
   {
     icon: PinIcon,
     label: "Ubicación",
-    value: "Calle 14 casi 59, Barrio Puerto",
+    value: "Calle 14 Nº 2949, El Samaritano",
   },
   {
     icon: MailIcon,
@@ -41,7 +41,7 @@ export default function HuertaContact() {
 
           <ContactDetails
             items={contactItems}
-            note="Pedidos y consultas: 2262-50-9574. El vivero abre los viernes desde las 10:00."
+            note="Pedidos y consultas: 2262-50-9574. El vivero abre los viernes de 10:00 a 12:00."
           >
             <ContactForm label="Hacer una consulta" />
           </ContactDetails>

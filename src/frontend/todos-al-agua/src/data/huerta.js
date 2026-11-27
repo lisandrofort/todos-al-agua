@@ -15,6 +15,10 @@ export const categories = [
         descripcion: "Plantas cultivadas en el proyecto Flor de Pan.",
       },
       {
+        nombre: "Flores de estación",
+        descripcion: "Flores producidas con dedicación por el equipo del vivero.",
+      },
+      {
         nombre: "Sobres de semillas",
         descripcion: "Semillas cosechadas y preparadas por los propios participantes.",
       },
@@ -48,7 +52,7 @@ export const featuredItems = [
     categoria: "Vivero y plantines",
     title: "Vivero y plantines",
     description:
-      "Plantines de estación, aromáticas, medicinales y semillas cosechadas por ellos.",
+      "Plantines de estación, aromáticas, medicinales, flores y semillas cosechadas por ellos.",
     tag: "Flor de Pan",
     tone: "primary",
   },
