@@ -5,15 +5,15 @@ import ScheduleCard from "../ui/ScheduleCard";
 import "./Teaching.css";
 
 const features = [
-  "Cultivos y plantines producidos con prácticas agroecológicas.",
-  "Talleres y recorridos para aprender sobre huerta y ambiente.",
-  "Venta de plantines y cosechas en la cantina y ferias locales.",
+  "El vivero funciona en el Centro Integral de Prevención El Samaritano, Barrio Puerto.",
+  "Los jóvenes aprenden el oficio, perciben un sueldo y fijan sus propios precios.",
+  "Venden por pedido, en el vivero los viernes y en ferias locales.",
 ];
 
 const schedule = [
-  { label: "Visitas", value: "Con coordinación previa" },
-  { label: "Talleres", value: "Sábados por la mañana" },
-  { label: "Plantines", value: "Disponibles en la cantina" },
+  { label: "Vivero", value: "Viernes desde las 10:00" },
+  { label: "Dirección", value: "Calle 14 casi 59" },
+  { label: "Panificados", value: "Feria 4 Estaciones, fines de semana y feriados" },
 ];
 
 export default function HuertaInfo() {
@@ -23,26 +23,26 @@ export default function HuertaInfo() {
         <div className="split-copy">
           <Eyebrow>Nuestra huerta</Eyebrow>
           <h2 className="text-subtitle">
-            Un espacio para aprender y producir juntos
+            Un proyecto de inclusión que produce y aprende
           </h2>
           <p className="text-body">
-            La huerta de Todos al Agua es un lugar de encuentro donde cultivamos
-            alimentos, compartimos saberes y fortalecemos lazos con la comunidad
-            de Necochea.
+            La huerta y el vivero son parte de «Flor de Pan, huerta y
+            panificados», un proyecto de la Asociación Civil Todos al Agua que
+            da formación y trabajo a jóvenes y adultos con discapacidad.
           </p>
 
           <FeatureList items={features} />
 
-          <Button href="#productos">Ver productos</Button>
+          <Button href="#productos">Ver qué producen</Button>
         </div>
 
         <ScheduleCard
           id="horarios"
-          kicker="Visitas y talleres"
-          title="Cómo participar de la huerta"
+          kicker="Dónde y cuándo"
+          title="Cómo encontrarlos"
           schedule={schedule}
-          note="Consultanos por disponibilidad de plantines, próximas cosechas y fechas de talleres."
-          action={{ href: "#contacto", label: "Consultar visita" }}
+          note="La producción depende de la temporada. Para pedidos, llamá al 2262-50-9574."
+          action={{ href: "#contacto", label: "Hacer una consulta" }}
         />
       </div>
     </section>

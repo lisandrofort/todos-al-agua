@@ -1,101 +1,43 @@
+// Contenido basado en notas de la Municipalidad de Necochea y LU24 (2026).
+// No publicamos precios: los fijan los propios jóvenes del proyecto y dependen
+// de la temporada y la disponibilidad.
+
 export const categories = [
   {
-    categoria: "Plantines de estación",
+    categoria: "Vivero y plantines",
     items: [
       {
-        nombre: "Plantín de lechuga mantecosa",
-        descripcion: "Bandeja x6, ideal para canteros o macetas.",
-        precio: 2500,
+        nombre: "Plantines de estación",
+        descripcion: "Lechuga, acelga y remolacha producidos desde cero en el vivero.",
       },
       {
-        nombre: "Plantín de tomate perita",
-        descripcion: "Plantines fuertes para trasplante.",
-        precio: 2800,
+        nombre: "Aromáticas y medicinales",
+        descripcion: "Plantas cultivadas en el proyecto Flor de Pan.",
       },
       {
-        nombre: "Plantín de acelga",
-        descripcion: "Hojas tiernas, cosecha escalonada.",
-        precio: 2400,
-      },
-      {
-        nombre: "Plantín de pimiento morrón",
-        descripcion: "Variedad dulce de producción abundante.",
-        precio: 3000,
+        nombre: "Sobres de semillas",
+        descripcion: "Semillas cosechadas y preparadas por los propios participantes.",
       },
     ],
   },
   {
-    categoria: "Aromáticas",
+    categoria: "Panificados sin TACC",
     items: [
       {
-        nombre: "Albahaca",
-        descripcion: "En maceta de cultivo, aroma intenso.",
-        precio: 2200,
+        nombre: "Panes y pizzetas",
+        descripcion: "Elaborados en cocina exclusiva para celíacos.",
       },
       {
-        nombre: "Romero",
-        descripcion: "Resistente, ideal para cocina y jardín.",
-        precio: 2200,
+        nombre: "Empanadas",
+        descripcion: "Variedades saladas de la panificadora del proyecto.",
       },
       {
-        nombre: "Menta",
-        descripcion: "Perfecta para infusiones y postres.",
-        precio: 2000,
+        nombre: "Pepas, cookies y brownies",
+        descripcion: "Productos dulces aptos para celíacos.",
       },
       {
-        nombre: "Mix aromáticas",
-        descripcion: "Perejil, orégano y ciboulette.",
-        precio: 3500,
-      },
-    ],
-  },
-  {
-    categoria: "Hortalizas de estación",
-    items: [
-      {
-        nombre: "Bolsa de verduras mixtas",
-        descripcion: "Selección fresca de la huerta según cosecha.",
-        precio: 4500,
-      },
-      {
-        nombre: "Zapallitos (kg)",
-        descripcion: "Cosecha del día, sin agroquímicos.",
-        precio: 1800,
-      },
-      {
-        nombre: "Tomates (kg)",
-        descripcion: "Tomate redondo de temporada.",
-        precio: 2200,
-      },
-      {
-        nombre: "Verdeo atado",
-        descripcion: "Atado fresco para cocina diaria.",
-        precio: 1200,
-      },
-    ],
-  },
-  {
-    categoria: "Kits y abonos",
-    items: [
-      {
-        nombre: "Kit huerta en casa",
-        descripcion: "3 plantines, sustrato y guía de cuidados.",
-        precio: 8500,
-      },
-      {
-        nombre: "Compost orgánico (5 kg)",
-        descripcion: "Abono natural producido en la huerta.",
-        precio: 3200,
-      },
-      {
-        nombre: "Humus de lombriz (2 kg)",
-        descripcion: "Mejora el suelo y nutre tus plantas.",
-        precio: 3800,
-      },
-      {
-        nombre: "Semillas de estación",
-        descripcion: "Sobre surtido para siembra directa.",
-        precio: 1500,
+        nombre: "Pastafrolas",
+        descripcion: "Clásico de la panificadora sin gluten.",
       },
     ],
   },
@@ -106,31 +48,31 @@ export const featuredItems = [
     categoria: "Vivero y plantines",
     title: "Vivero y plantines",
     description:
-      "Plantines de estación, aromáticas y variedades listas para llevar a casa.",
-    tag: "De estación",
+      "Plantines de estación, aromáticas, medicinales y semillas cosechadas por ellos.",
+    tag: "Flor de Pan",
     tone: "primary",
   },
   {
-    categoria: "Huerta orgánica",
-    title: "Huerta orgánica",
+    categoria: "Panificados sin TACC",
+    title: "Panificados sin TACC",
     description:
-      "Hortalizas cultivadas sin agroquímicos, con cosechas frescas y locales.",
-    tag: "Cosecha fresca",
+      "Panes, pizzetas, empanadas y dulces elaborados en cocina exclusiva.",
+    tag: "Sin gluten",
     tone: "sun",
   },
   {
-    categoria: "Talleres y visitas",
-    title: "Talleres y visitas",
+    categoria: "Inserción laboral",
+    title: "Inserción laboral",
     description:
-      "Recorridos y talleres para escuelas, familias y grupos de la comunidad.",
-    tag: "Aprender haciendo",
+      "Jóvenes con discapacidad aprenden un oficio, perciben un sueldo y gestionan su producción.",
+    tag: "El Samaritano",
     tone: "sky",
   },
   {
     categoria: "Puntos de venta",
     title: "Puntos de venta",
     description:
-      "Encontranos en la cantina de Todos al Agua y en ferias de Necochea.",
+      "Vivero los viernes en Calle 14 casi 59 y panificados en la Feria 4 Estaciones.",
     tag: "Necochea",
     tone: "coral",
   },

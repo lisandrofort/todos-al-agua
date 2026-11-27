@@ -8,7 +8,7 @@ const contactItems = [
   {
     icon: PinIcon,
     label: "Ubicación",
-    value: "Necochea, Buenos Aires",
+    value: "Calle 14 casi 59, Barrio Puerto",
   },
   {
     icon: MailIcon,
@@ -33,14 +33,15 @@ export default function HuertaContact() {
               ¿Querés visitar la huerta o hacer una consulta?
             </h2>
             <p className="text-body contact-text">
-              Escribinos para coordinar visitas, sumarte a talleres, participar
-              como voluntario o consultar por plantines y productos disponibles.
+              Escribinos o llamanos para consultar por plantines, semillas y
+              panificados sin TACC, o para acercarte al vivero del proyecto
+              Flor de Pan.
             </p>
           </div>
 
           <ContactDetails
             items={contactItems}
-            note="También podés acercarte a la cantina de Todos al Agua para consultar por plantines."
+            note="Pedidos y consultas: 2262-50-9574. El vivero abre los viernes desde las 10:00."
           >
             <ContactForm label="Hacer una consulta" />
           </ContactDetails>

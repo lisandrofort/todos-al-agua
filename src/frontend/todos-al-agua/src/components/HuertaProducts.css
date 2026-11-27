@@ -1,6 +1,6 @@
 .huerta-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 18px;
   margin-top: 40px;
@@ -59,13 +59,32 @@
   color: var(--color-huerta-muted);
 }
 
-.huerta-item-price {
-  flex: none;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: right;
-  color: var(--color-huerta-green);
+.huerta-ventas {
+  margin-top: 24px;
+  padding: 24px 28px;
+  border-radius: var(--radius-lg);
+  background: var(--color-huerta-cream);
+  border: 1px solid rgba(63, 107, 74, 0.14);
+}
+
+.huerta-ventas h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: var(--color-huerta-green-dark);
+}
+
+.huerta-ventas ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-huerta-muted);
+}
+
+.huerta-ventas strong {
+  color: var(--color-huerta-earth-dark);
 }
 
 @media (max-width: 1000px) {

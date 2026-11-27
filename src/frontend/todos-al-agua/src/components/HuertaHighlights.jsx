@@ -7,8 +7,8 @@ import "./HuertaHighlights.css";
 
 const highlightIcons = {
   "Vivero y plantines": <SproutIcon />,
-  "Huerta orgánica": <LeafIcon />,
-  "Talleres y visitas": <BasketIcon />,
+  "Panificados sin TACC": <BasketIcon />,
+  "Inserción laboral": <LeafIcon />,
   "Puntos de venta": <StoreIcon />,
 };
 
@@ -22,9 +22,9 @@ export default function HuertaHighlights() {
           </Eyebrow>
           <h1 className="huerta-intro-title">Cultivamos comunidad</h1>
           <p className="huerta-intro-text">
-            Un espacio para producir, aprender y compartir. En nuestra huerta y
-            vivero cultivamos alimentos, plantines y saberes junto a la
-            comunidad de Necochea.
+            Vivero, huerta y panificados sin TACC: un proyecto de Todos al Agua
+            donde jóvenes y adultos con discapacidad aprenden un oficio, producen
+            y venden sus productos en Necochea.
           </p>
           <Button href="#productos" variant="light">
             Ver productos

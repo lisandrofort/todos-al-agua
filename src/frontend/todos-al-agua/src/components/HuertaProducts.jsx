@@ -1,5 +1,4 @@
 import { categories } from "../data/huerta";
-import { formatPrice } from "../utils/formatPrice";
 import SectionHeading from "../ui/SectionHeading";
 import "./HuertaProducts.css";
 
@@ -8,9 +7,9 @@ export default function HuertaProducts() {
     <section className="section section--soft" id="productos">
       <div className="container">
         <SectionHeading
-          eyebrow="Productos"
-          title="Lo que cultivamos y compartimos"
-          description="Precios de referencia, sujetos a disponibilidad y temporada. Consultanos por stock y cosechas del día."
+          eyebrow="Producción"
+          title="Lo que cultivan y elaboran"
+          description="Plantines, semillas y panificados sin TACC del proyecto Flor de Pan. No publicamos precios: consultalos directamente según temporada y disponibilidad."
         />
 
         <div className="huerta-grid">
@@ -27,15 +26,29 @@ export default function HuertaProducts() {
                         <p className="huerta-item-desc">{item.descripcion}</p>
                       )}
                     </div>
-
-                    <span className="huerta-item-price">
-                      {formatPrice(item.precio)}
-                    </span>
                   </li>
                 ))}
               </ul>
             </article>
           ))}
+        </div>
+
+        <div className="huerta-ventas">
+          <h3>¿Dónde los encontrás?</h3>
+          <ul>
+            <li>
+              <strong>Vivero:</strong> viernes desde las 10:00, Calle 14 casi 59
+              (Barrio Puerto).
+            </li>
+            <li>
+              <strong>Panificados:</strong> fines de semana y feriados en la
+              Feria 4 Estaciones del Parque Miguel Lillo, y en comercios
+              adheridos de la playa.
+            </li>
+            <li>
+              <strong>Por pedido:</strong> llamá al 2262-50-9574.
+            </li>
+          </ul>
         </div>
       </div>
     </section>
