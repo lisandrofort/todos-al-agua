@@ -1,3 +1,10 @@
+.admin-page,
+.admin-page *,
+.admin-page *::before,
+.admin-page *::after {
+  box-sizing: border-box;
+}
+
 .admin-page {
   /* Misma paleta azul del home, reutilizada en el panel */
   --admin-ink: #123b5e;
@@ -262,6 +269,15 @@
   color: var(--admin-ink);
   font-family: var(--font-family-base);
   font-size: 14px;
+}
+
+.admin-select {
+  padding-right: 28px;
+}
+
+.admin-row-actions .admin-select {
+  flex: 1;
+  min-width: 96px;
 }
 
 .admin-select:focus-visible,
