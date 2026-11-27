@@ -1,6 +1,6 @@
 import "./HeroArt.css";
 
-// Logo de la Asociación Civil sin fondo, directamente sobre el azul del hero.
+// Logo de la Asociación Civil a resolución nativa, sin fondo ni leyenda.
 export default function HeroArt() {
   return (
     <div className="hero-art">
@@ -11,10 +11,6 @@ export default function HeroArt() {
         width="432"
         height="260"
       />
-      <p className="hero-logo-caption">
-        <span className="hero-logo-dot" aria-hidden="true" />
-        Asociación Civil · Necochea
-      </p>
     </div>
   );
 }
