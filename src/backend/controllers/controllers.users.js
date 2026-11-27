@@ -4,6 +4,7 @@ const Reset = require("../repositories/repository.reset.js");
 const { sendResetEmail } = require("../lib/mail.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { configuracion } = require("../lib/config.js");
 
 const ROL_POR_DEFECTO = "usuario";
 const DURACION_SESION = "15m";
@@ -64,7 +65,8 @@ async function verifyUser(email, password) {
 }
 
 function signSession({ id, email, name, rol }) {
-  return jwt.sign({ id, email, name, rol }, process.env.CANTINA_TOKEN, {
+  return jwt.sign({ id, email, name, rol }, configuracion().jwtSecret, {
+    algorithm: "HS256",
     expiresIn: DURACION_SESION,
   });
 }
@@ -145,9 +147,7 @@ async function requestPasswordReset(email) {
   await Reset.invalidateForUser(user.id);
   await Reset.create(user.id, token);
 
-  const frontendUrl = (
-    process.env.FRONTEND_URL ?? "http://localhost:5173"
-  ).replace(/\/$/, "");
+  const { frontendUrl } = configuracion();
   const link = `${frontendUrl}/restablecer?token=${token}`;
 
   try {
