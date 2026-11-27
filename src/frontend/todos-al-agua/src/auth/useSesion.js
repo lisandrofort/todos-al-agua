@@ -110,6 +110,9 @@ export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpir
         // Primero cerramos la sesión y después avisamos (para que no se borre).
         logout();
         setSessionExpired(true);
+        // Con el modal sin respuesta, volvemos al inicio. replace() evita que
+        // el botón "atrás" devuelva a una ruta protegida ya sin sesión.
+        window.location.replace("/");
       } else if (tiempoInactivo >= AVISO_MS) {
         setMostrarAviso(true);
       }
