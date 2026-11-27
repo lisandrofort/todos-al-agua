@@ -1,177 +1,200 @@
-const Menu = require('../repositories/repository.menu.js')
+const Menu = require("../repositories/repository.menu.js");
+const {
+  falla,
+  textoRequerido,
+  validarItem,
+} = require("../lib/validacion.js");
 
-const CATEGORY_FIELDS = ["categoria", "items", "nota_guarnicion"]
-const ITEM_FIELDS = ["nombre", "descripcion", "precio", "precios", "promocion"]
-
-function createError(message, status) {
-    const error = new Error(message)
-    error.status = status
-    return error
-}
+const CATEGORY_FIELDS = ["categoria", "items", "nota_guarnicion"];
 
 function normalize(value) {
-    return String(value ?? "").trim().toLowerCase()
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function validarItems(items) {
+  if (!Array.isArray(items)) {
+    throw falla("Los items deben ser un array");
+  }
+  return items.map((item) => validarItem(item));
 }
 
 async function getFullMenu() {
-    const allMenu = new Menu()
-    return await allMenu.getAll()
+  const allMenu = new Menu();
+  return await allMenu.getAll();
 }
 
 async function getDishByCategory(category) {
-    const allMenu = await getFullMenu()
-    const search = normalize(category)
-    return allMenu.filter((item) => normalize(item.categoria) === search)
+  const allMenu = await getFullMenu();
+  const search = normalize(category);
+  return allMenu.filter((item) => normalize(item.categoria) === search);
 }
 
 async function getDishById(id) {
-    const allMenu = new Menu()
-    return await allMenu.getById(id)
+  const allMenu = new Menu();
+  return await allMenu.getById(id);
 }
 
-async function createCategory(data) {
-    if (!data.categoria || !normalize(data.categoria)) {
-        throw createError("La categoría es obligatoria", 400)
-    }
-    if (data.items !== undefined && !Array.isArray(data.items)) {
-        throw createError("Los items deben ser un array", 400)
-    }
+async function createCategory(data = {}) {
+  const categoryData = {
+    categoria: textoRequerido(data.categoria, "La categoría es obligatoria", 100),
+    items: data.items === undefined ? [] : validarItems(data.items),
+  };
+  if (data.nota_guarnicion !== undefined) {
+    categoryData.nota_guarnicion = textoRequerido(
+      String(data.nota_guarnicion),
+      "La nota de guarnición no puede estar vacía",
+      300,
+    );
+  }
 
-    const categoryData = {
-        categoria: data.categoria,
-        items: data.items ?? [],
-    }
-    if (data.nota_guarnicion !== undefined) {
-        categoryData.nota_guarnicion = data.nota_guarnicion
-    }
-
-    const allMenu = new Menu()
-    return await allMenu.create(categoryData)
+  const allMenu = new Menu();
+  return await allMenu.create(categoryData);
 }
 
-async function updateCategory(id, data) {
-    const allMenu = new Menu()
-    const categoryFound = await allMenu.getById(id)
-    if (!categoryFound) {
-        return null
-    }
+async function updateCategory(id, data = {}) {
+  const allMenu = new Menu();
+  const categoryFound = await allMenu.getById(id);
+  if (!categoryFound) {
+    return null;
+  }
 
-    const updateData = {}
-    CATEGORY_FIELDS.forEach((field) => {
-        if (data[field] !== undefined) {
-            updateData[field] = data[field]
-        }
-    })
+  const updateData = {};
+  CATEGORY_FIELDS.forEach((field) => {
+    if (data[field] !== undefined) {
+      updateData[field] = data[field];
+    }
+  });
 
-    if (updateData.items !== undefined && !Array.isArray(updateData.items)) {
-        throw createError("Los items deben ser un array", 400)
-    }
-    if (updateData.categoria !== undefined && !normalize(updateData.categoria)) {
-        throw createError("La categoría no puede estar vacía", 400)
-    }
-    if (Object.keys(updateData).length === 0) {
-        throw createError("No hay campos válidos para actualizar", 400)
-    }
+  if (updateData.categoria !== undefined) {
+    updateData.categoria = textoRequerido(
+      updateData.categoria,
+      "La categoría no puede estar vacía",
+      100,
+    );
+  }
+  if (updateData.items !== undefined) {
+    updateData.items = validarItems(updateData.items);
+  }
+  if (updateData.nota_guarnicion !== undefined) {
+    updateData.nota_guarnicion = textoRequerido(
+      String(updateData.nota_guarnicion),
+      "La nota de guarnición no puede estar vacía",
+      300,
+    );
+  }
+  if (Object.keys(updateData).length === 0) {
+    throw falla("No hay campos válidos para actualizar");
+  }
 
-    return await allMenu.update(id, updateData)
+  return await allMenu.update(id, updateData);
 }
 
 async function deleteCategory(id) {
-    const allMenu = new Menu()
-    const categoryFound = await allMenu.getById(id)
-    if (!categoryFound) {
-        return null
-    }
-    return await allMenu.delete(id)
+  const allMenu = new Menu();
+  const categoryFound = await allMenu.getById(id);
+  if (!categoryFound) {
+    return null;
+  }
+  return await allMenu.delete(id);
 }
 
-async function addItem(id, data) {
-    const allMenu = new Menu()
-    const categoryFound = await allMenu.getById(id)
-    if (!categoryFound) {
-        return null
-    }
-    if (!data.nombre || !normalize(data.nombre)) {
-        throw createError("El nombre del plato es obligatorio", 400)
-    }
+async function addItem(id, data = {}) {
+  const allMenu = new Menu();
+  const categoryFound = await allMenu.getById(id);
+  if (!categoryFound) {
+    return null;
+  }
 
-    const item = {}
-    ITEM_FIELDS.forEach((field) => {
-        if (data[field] !== undefined) {
-            item[field] = data[field]
-        }
-    })
+  const item = validarItem(data);
+  if (!item.nombre) {
+    throw falla("El nombre del plato es obligatorio");
+  }
 
-    const items = categoryFound.items ?? []
-    const duplicated = items.some((current) => normalize(current.nombre) === normalize(item.nombre))
+  const items = categoryFound.items ?? [];
+  const duplicated = items.some(
+    (current) => normalize(current.nombre) === normalize(item.nombre),
+  );
+  if (duplicated) {
+    throw falla("Ya existe un plato con ese nombre en la categoría", 409);
+  }
+
+  return await allMenu.update(id, { items: [...items, item] });
+}
+
+async function updateItem(id, itemName, data = {}) {
+  const allMenu = new Menu();
+  const categoryFound = await allMenu.getById(id);
+  if (!categoryFound) {
+    return null;
+  }
+
+  const updateData = validarItem(data);
+  if (Object.keys(updateData).length === 0) {
+    throw falla("No hay campos válidos para actualizar");
+  }
+
+  const items = categoryFound.items ?? [];
+  const itemIndex = items.findIndex(
+    (current) => normalize(current.nombre) === normalize(itemName),
+  );
+  if (itemIndex === -1) {
+    return null;
+  }
+
+  if (updateData.nombre) {
+    const duplicated = items.some(
+      (current, index) =>
+        index !== itemIndex && normalize(current.nombre) === normalize(updateData.nombre),
+    );
     if (duplicated) {
-        throw createError("Ya existe un plato con ese nombre en la categoría", 409)
+      throw falla("Ya existe un plato con ese nombre en la categoría", 409);
     }
+  }
 
-    return await allMenu.update(id, { items: [...items, item] })
-}
+  const updatedItem = { ...items[itemIndex], ...updateData };
+  const updatedItems = items.map((current, index) =>
+    index === itemIndex ? updatedItem : current,
+  );
 
-async function updateItem(id, itemName, data) {
-    const allMenu = new Menu()
-    const categoryFound = await allMenu.getById(id)
-    if (!categoryFound) {
-        return null
-    }
-
-    const updateData = {}
-    ITEM_FIELDS.forEach((field) => {
-        if (data[field] !== undefined) {
-            updateData[field] = data[field]
-        }
-    })
-    if (Object.keys(updateData).length === 0) {
-        throw createError("No hay campos válidos para actualizar", 400)
-    }
-    if (updateData.nombre !== undefined && !normalize(updateData.nombre)) {
-        throw createError("El nombre del plato no puede estar vacío", 400)
-    }
-
-    const items = categoryFound.items ?? []
-    const itemIndex = items.findIndex((current) => normalize(current.nombre) === normalize(itemName))
-    if (itemIndex === -1) {
-        return null
-    }
-
-    const updatedItem = { ...items[itemIndex], ...updateData }
-    const updatedItems = items.map((current, index) => (index === itemIndex ? updatedItem : current))
-
-    const category = await allMenu.update(id, { items: updatedItems })
-    return { ...updatedItem, categoria: category.categoria, categoriaId: category.id }
+  const category = await allMenu.update(id, { items: updatedItems });
+  return { ...updatedItem, categoria: category.categoria, categoriaId: category.id };
 }
 
 async function deleteItem(id, itemName) {
-    const allMenu = new Menu()
-    const categoryFound = await allMenu.getById(id)
-    if (!categoryFound) {
-        return null
-    }
+  const allMenu = new Menu();
+  const categoryFound = await allMenu.getById(id);
+  if (!categoryFound) {
+    return null;
+  }
 
-    const items = categoryFound.items ?? []
-    const itemIndex = items.findIndex((current) => normalize(current.nombre) === normalize(itemName))
-    if (itemIndex === -1) {
-        return null
-    }
+  const items = categoryFound.items ?? [];
+  const itemIndex = items.findIndex(
+    (current) => normalize(current.nombre) === normalize(itemName),
+  );
+  if (itemIndex === -1) {
+    return null;
+  }
 
-    const deletedItem = items[itemIndex]
-    const updatedItems = items.filter((current, index) => index !== itemIndex)
-    await allMenu.update(id, { items: updatedItems })
+  const deletedItem = items[itemIndex];
+  const updatedItems = items.filter((current, index) => index !== itemIndex);
+  await allMenu.update(id, { items: updatedItems });
 
-    return { ...deletedItem, categoria: categoryFound.categoria, categoriaId: categoryFound.id, deleted: true }
+  return {
+    ...deletedItem,
+    categoria: categoryFound.categoria,
+    categoriaId: categoryFound.id,
+    deleted: true,
+  };
 }
 
 module.exports = {
-    getFullMenu,
-    getDishByCategory,
-    getDishById,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    addItem,
-    updateItem,
-    deleteItem,
-}
+  getFullMenu,
+  getDishByCategory,
+  getDishById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  addItem,
+  updateItem,
+  deleteItem,
+};

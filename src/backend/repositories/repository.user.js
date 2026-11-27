@@ -1,5 +1,6 @@
 const { admin } = require("../lib/firebase");
 const bcrypt = require("bcryptjs");
+const { falla } = require("../lib/validacion.js");
 
 function normalizeEmail(email) {
   return String(email ?? "")
@@ -45,18 +46,14 @@ class User {
 
     // Cubre cuentas viejas creadas antes de existiera la reserva.
     if (await User.exists(email)) {
-      const error = new Error("Ya hay un registro con este email");
-      error.status = 409;
-      throw error;
+      throw falla("Ya hay un registro con este email", 409);
     }
 
     return admin.runTransaction(async (transaction) => {
       const emailRef = admin.collection("user_emails").doc(normalized);
       const lock = await transaction.get(emailRef);
       if (lock.exists) {
-        const error = new Error("Ya hay un registro con este email");
-        error.status = 409;
-        throw error;
+        throw falla("Ya hay un registro con este email", 409);
       }
 
       const docRef = this.collection.doc();
@@ -128,9 +125,7 @@ class User {
 
         const reserva = await transaction.get(nuevaReserva);
         if (reserva.exists && reserva.data()?.userId !== id) {
-          const error = new Error("Ya hay un registro con este email");
-          error.status = 409;
-          throw error;
+          throw falla("Ya hay un registro con este email", 409);
         }
 
         const emailAnterior = normalizeEmail(userDoc.data().email);

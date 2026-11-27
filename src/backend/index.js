@@ -5,6 +5,7 @@ const userRouter = require("./routes/users.js");
 const menuRouter = require("./routes/menu.js");
 const contactRouter = require("./routes/contact.js");
 const { configuracion } = require("./lib/config.js");
+const { rutaNoEncontrada, manejadorErrores } = require("./lib/errores.js");
 
 function main() {
   const app = express();
@@ -34,6 +35,9 @@ function main() {
   app.use("/users", userRouter);
   app.use("/menu", menuRouter);
   app.use("/contact", contactRouter);
+
+  app.use(rutaNoEncontrada);
+  app.use(manejadorErrores);
 
   app.listen(port, () => {
     console.log(`Backend escuchando en http://localhost:${port}`);

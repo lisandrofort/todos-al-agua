@@ -5,8 +5,10 @@ const { sendResetEmail } = require("../lib/mail.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { configuracion } = require("../lib/config.js");
+const { falla, email: validarEmail, clave, textoRequerido } = require("../lib/validacion.js");
 
 const ROL_POR_DEFECTO = "usuario";
+const ROLES = ["admin", "cantina", "huerta", "usuario"];
 const DURACION_SESION = "15m";
 const MENSAJE_RECUPERACION =
   "Si el email existe, enviamos instrucciones para restablecer tu contraseña.";
@@ -17,21 +19,14 @@ function publicUser(user) {
   return safe;
 }
 
-async function findByEmail(email) {
-  return await User.getByEmail(email);
-}
-
 async function createUser(name, password, email) {
-  if (!name || !email || !password) {
-    const error = new Error("Faltan datos: nombre, email y contraseña");
-    error.status = 400;
-    throw error;
-  }
+  const nombre = textoRequerido(name, "Falta el nombre", 100);
+  const emailValido = validarEmail(email);
+  const pass = await encryptWord(clave(password));
 
-  const pass = await encryptWord(password);
   const created = await new User().createUnique({
-    name,
-    email,
+    name: nombre,
+    email: emailValido,
     pass,
     rol: ROL_POR_DEFECTO,
   });
@@ -39,29 +34,23 @@ async function createUser(name, password, email) {
 }
 
 async function emailExists(email) {
-  if (!email || !String(email).trim()) {
-    const error = new Error("Ingresá un email");
-    error.status = 400;
-    throw error;
-  }
-  return { exists: await User.exists(email) };
+  return { exists: await User.exists(validarEmail(email)) };
 }
 
 async function verifyUser(email, password) {
-  try {
-    const dataUser = await new User().login(email, password);
-    if (!dataUser) {
-      return new Error("El email o contraseña son incorrectos");
-    }
-    return signSession({
-      id: dataUser.id,
-      email: dataUser.email,
-      name: dataUser.name ?? dataUser.nombre,
-      rol: dataUser.rol ?? ROL_POR_DEFECTO,
-    });
-  } catch (e) {
-    return new Error(e.message);
+  if (typeof password !== "string" || !password) {
+    throw falla("El email o contraseña son incorrectos", 401);
   }
+  const dataUser = await new User().login(String(email ?? "").trim(), password);
+  if (!dataUser) {
+    throw falla("El email o contraseña son incorrectos", 401);
+  }
+  return signSession({
+    id: dataUser.id,
+    email: dataUser.email,
+    name: dataUser.name ?? dataUser.nombre,
+    rol: dataUser.rol ?? ROL_POR_DEFECTO,
+  });
 }
 
 function signSession({ id, email, name, rol }) {
@@ -95,16 +84,17 @@ async function getUserById(id) {
   return publicUser(await new User().getById(id));
 }
 
-async function updateUserById(id, data) {
+async function updateUserById(id, data = {}) {
   const userFound = await new User().getById(id);
   if (!userFound) {
     return null;
   }
 
   if (data.rol !== undefined && userFound.rol === "admin") {
-    const error = new Error("No se puede modificar el rol de un administrador");
-    error.status = 403;
-    throw error;
+    throw falla("No se puede modificar el rol de un administrador", 403);
+  }
+  if (data.rol !== undefined && !ROLES.includes(data.rol)) {
+    throw falla("El rol no es válido");
   }
 
   const allowedFields = ["name", "nombre", "email", "rol", "pass"];
@@ -116,13 +106,22 @@ async function updateUserById(id, data) {
   });
 
   if (Object.keys(updateData).length === 0) {
-    const error = new Error("No hay campos válidos para actualizar");
-    error.status = 400;
-    throw error;
+    throw falla("No hay campos válidos para actualizar");
   }
-
-  if (updateData.pass) {
-    updateData.pass = await encryptWord(updateData.pass);
+  if (updateData.name !== undefined || updateData.nombre !== undefined) {
+    const nombre = textoRequerido(
+      updateData.name ?? updateData.nombre,
+      "El nombre no puede estar vacío",
+      100,
+    );
+    updateData.name = nombre;
+    delete updateData.nombre;
+  }
+  if (updateData.email !== undefined) {
+    updateData.email = validarEmail(updateData.email);
+  }
+  if (updateData.pass !== undefined) {
+    updateData.pass = await encryptWord(clave(updateData.pass));
   }
 
   return publicUser(await new User().update(id, updateData));
@@ -137,13 +136,8 @@ async function deleteUserById(id) {
 }
 
 async function requestPasswordReset(email) {
-  if (!email || typeof email !== "string") {
-    const error = new Error("Ingresá un email");
-    error.status = 400;
-    throw error;
-  }
-
-  const user = await findByEmail(email.trim());
+  const emailValido = validarEmail(email);
+  const user = await User.getByEmail(emailValido);
   if (!user) {
     // Respuesta genérica: no revelamos si la cuenta existe.
     return { message: MENSAJE_RECUPERACION };
@@ -167,34 +161,21 @@ async function requestPasswordReset(email) {
 }
 
 async function resetPassword(token, password) {
-  if (!token || !password) {
-    const error = new Error("Faltan datos: token y contraseña");
-    error.status = 400;
-    throw error;
-  }
-  if (password.length < 6) {
-    const error = new Error("La contraseña debe tener al menos 6 caracteres");
-    error.status = 400;
-    throw error;
-  }
+  const tokenValido = textoRequerido(token, "Faltan datos: token y contraseña", 200);
+  const pass = await encryptWord(clave(password));
 
-  const reset = await Reset.findValid(token);
+  const reset = await Reset.findValid(tokenValido);
   if (!reset) {
-    const error = new Error("El link es inválido o venció");
-    error.status = 400;
-    throw error;
+    throw falla("El link es inválido o venció");
   }
 
-  const pass = await encryptWord(password);
   const aplicado = await Reset.consumeAndChangePassword(
     reset.id,
     reset.userId,
     pass,
   );
   if (!aplicado) {
-    const error = new Error("El link es inválido o venció");
-    error.status = 400;
-    throw error;
+    throw falla("El link es inválido o venció");
   }
 
   return { message: "Contraseña actualizada. Ya podés iniciar sesión." };
