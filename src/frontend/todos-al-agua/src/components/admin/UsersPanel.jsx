@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiUsers } from "../../api/client";
+import { apiUsers, LOGIN_EVENT } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import {
   ETIQUETAS_PERMISO,
@@ -34,8 +34,8 @@ export default function UsersPanel() {
     }
 
     cargar();
-    window.addEventListener("todos-al-agua:login", cargar);
-    return () => window.removeEventListener("todos-al-agua:login", cargar);
+    window.addEventListener(LOGIN_EVENT, cargar);
+    return () => window.removeEventListener(LOGIN_EVENT, cargar);
   }, []);
 
   const { user, hasPermission, logout } = useAuth();

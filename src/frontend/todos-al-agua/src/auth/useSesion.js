@@ -1,31 +1,51 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { apiAuth, setToken } from "../api/client";
+import { apiAuth, setToken, TOKEN_KEY } from "../api/client";
+import { decodificarToken } from "./token";
 
-const AVISO_MS = 500 * 1000; // avisar a los 50 segundos
-const CIERRE_MS = 600 * 1000; // cerrar a los 60 segundos
-const RENOVAR_MS = 300 * 1000;
+const AVISO_MS = 500 * 1000; // avisar a los ~8 minutos de inactividad
+const CIERRE_MS = 600 * 1000; // cerrar a los 10 minutos de inactividad
+const RENOVAR_MS = 300 * 1000; // renovar el JWT cuando queden menos de 5 min
+const ACTIVIDAD_KEY = "todos-al-agua.last-activity";
 
-// Hook que controla el tiempo de la sesión.
-// Se lo llama desde AuthProvider con el usuario y las funciones de sesión.
-export function useSesion({ user, setUser, logout, setSessionExpired }) {
+// Hook que controla el tiempo de la sesión y lo sincroniza entre pestañas.
+export function useSesion({ user, setUser, logout, cerrarSesion, setSessionExpired }) {
   const ultimaActividad = useRef(0);
+  const ultimoGuardado = useRef(0);
   const sesionIniciada = useRef(false);
   const [mostrarAviso, setMostrarAviso] = useState(false);
+
+  const marcarActividad = useCallback(() => {
+    const ahora = Date.now();
+    ultimaActividad.current = ahora;
+    setMostrarAviso(false);
+    // Escribir en localStorage dispara el evento "storage" en las otras pestañas.
+    if (ahora - ultimoGuardado.current > 1000) {
+      ultimoGuardado.current = ahora;
+      localStorage.setItem(ACTIVIDAD_KEY, String(ahora));
+    }
+  }, []);
 
   // Renovar el JWT: NO toca el cronómetro (es automático, no actividad).
   const renovarToken = useCallback(async () => {
     const { token } = await apiAuth.refresh();
+    const payload = decodificarToken(token);
+    if (!payload) {
+      throw new Error("El token renovado no es válido");
+    }
     setToken(token);
-    const payload = JSON.parse(atob(token.split(".")[1]));
     setUser(payload);
   }, [setUser]);
 
   // Extender desde el botón: renueva y SÍ resetea el contador.
   const extendSession = useCallback(async () => {
-    await renovarToken();
-    ultimaActividad.current = Date.now();
-    setMostrarAviso(false);
-  }, [renovarToken]);
+    try {
+      await renovarToken();
+      marcarActividad();
+    } catch {
+      logout();
+      setSessionExpired(true);
+    }
+  }, [renovarToken, marcarActividad, logout, setSessionExpired]);
 
   // Al arrancar la sesión, marcamos "ahora" como última actividad.
   useEffect(() => {
@@ -42,7 +62,7 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
 
   // Renovar el token cuando está por vencer.
   useEffect(() => {
-    if (!user) {
+    if (!user || typeof user.exp !== "number") {
       return undefined;
     }
 
@@ -52,7 +72,7 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
         try {
           await renovarToken();
         } catch {
-          // si falla, el cronómetro sigue rigiendo
+          // si falla, el cronómetro de inactividad sigue rigiendo
         }
       }
     }, 5000);
@@ -66,23 +86,18 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
       return undefined;
     }
 
-    function reiniciar() {
-      ultimaActividad.current = Date.now();
-      setMostrarAviso(false);
-    }
-
-    window.addEventListener("pointerdown", reiniciar);
-    window.addEventListener("keydown", reiniciar);
-    window.addEventListener("scroll", reiniciar);
+    window.addEventListener("pointerdown", marcarActividad);
+    window.addEventListener("keydown", marcarActividad);
+    window.addEventListener("scroll", marcarActividad);
 
     return () => {
-      window.removeEventListener("pointerdown", reiniciar);
-      window.removeEventListener("keydown", reiniciar);
-      window.removeEventListener("scroll", reiniciar);
+      window.removeEventListener("pointerdown", marcarActividad);
+      window.removeEventListener("keydown", marcarActividad);
+      window.removeEventListener("scroll", marcarActividad);
     };
-  }, [user]);
+  }, [user, marcarActividad]);
 
-  // Cronómetro: aviso a los 50 s, cierre a los 60 s sin actividad.
+  // Cronómetro: aviso a los ~8 min, cierre a los 10 min sin actividad.
   useEffect(() => {
     if (!user) {
       return undefined;
@@ -103,17 +118,29 @@ export function useSesion({ user, setUser, logout, setSessionExpired }) {
     return () => clearInterval(id);
   }, [user, logout, setSessionExpired]);
 
-  // Sincronizar la actividad entre pestañas.
+  // Sincronizar actividad, login y logout entre pestañas.
   useEffect(() => {
     function alCambiar(evento) {
-      if (evento.key === "todos-al-agua.last-activity") {
+      if (evento.key === ACTIVIDAD_KEY && evento.newValue) {
         ultimaActividad.current = Number(evento.newValue);
+        setMostrarAviso(false);
+      }
+      if (evento.key === TOKEN_KEY) {
+        const payload = decodificarToken(evento.newValue);
+        if (payload) {
+          ultimaActividad.current = Date.now();
+          sesionIniciada.current = true;
+          setUser(payload);
+          setSessionExpired(false);
+        } else {
+          cerrarSesion();
+        }
       }
     }
 
     window.addEventListener("storage", alCambiar);
     return () => window.removeEventListener("storage", alCambiar);
-  }, []);
+  }, [setUser, cerrarSesion, setSessionExpired]);
 
   return { mostrarAviso, extendSession };
 }

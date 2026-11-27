@@ -20,8 +20,11 @@ export function setToken(token) {
 }
 
 // Prepara las cabeceras. Sin token, devuelve solo el Content-Type.
-function armarCabeceras(necesitaToken) {
-  const cabeceras = { "Content-Type": "application/json" };
+function armarCabeceras(necesitaToken, datos) {
+  const cabeceras = {};
+  if (datos !== undefined) {
+    cabeceras["Content-Type"] = "application/json";
+  }
 
   if (!necesitaToken) return cabeceras;
 
@@ -67,10 +70,23 @@ async function verificar(respuesta, necesitaToken) {
 }
 
 // Motor: cuatro pasos, sin condiciones adentro.
-export async function request(ruta, metodo, datos, necesitaToken) {
-  const cabeceras = armarCabeceras(necesitaToken);
+export async function request(ruta, metodo, datos, necesitaToken, reintentar = true) {
+  const cabeceras = armarCabeceras(necesitaToken, datos);
   const cuerpo = armarCuerpo(datos);
-  const respuesta = await llamar(ruta, metodo, cabeceras, cuerpo);
+  let respuesta = await llamar(ruta, metodo, cabeceras, cuerpo);
+
+  // Un 401 puede deberse a que el JWT venció durante la petición: se renueva
+  // una vez y se repite. Si el refresh también falla, verificar() cierra sesión.
+  if (necesitaToken && respuesta.status === 401 && reintentar && getToken()) {
+    try {
+      const { token } = await apiAuth.refresh();
+      setToken(token);
+      respuesta = await llamar(ruta, metodo, armarCabeceras(necesitaToken, datos), cuerpo);
+    } catch {
+      // Se conserva la respuesta 401 original.
+    }
+  }
+
   return verificar(respuesta, necesitaToken);
 }
 
@@ -105,7 +121,9 @@ export const apiAuth = {
 
   // Pedir el mail con el link de recuperación.
   forgotPassword(email) {
-    return request("/users/forgot-password", "POST", { email });
+    return request("/users/forgot-password", "POST", {
+      email: normalizarEmail(email),
+    });
   },
 
   // Guardar la contraseña nueva con el token del mail.
@@ -115,7 +133,7 @@ export const apiAuth = {
 
   // Pedir un JWT nuevo sin escribir la contraseña.
   refresh() {
-    return request("/users/refresh", "POST", null, true);
+    return request("/users/refresh", "POST", null, true, false);
   },
 };
 
@@ -127,16 +145,21 @@ export const apiContact = {
 // Carta: leer es público, escribir pide admin.
 export const apiMenu = {
   getAll: () => request("/menu"),
-  getById: (id) => request("/menu/" + id),
+  getById: (id) => request("/menu/" + encodeURIComponent(id)),
   create: (data) => request("/menu", "POST", data, true),
-  update: (id, data) => request("/menu/" + id, "PUT", data, true),
-  remove: (id) => request("/menu/" + id, "DELETE", null, true),
+  update: (id, data) =>
+    request("/menu/" + encodeURIComponent(id), "PUT", data, true),
+  remove: (id) =>
+    request("/menu/" + encodeURIComponent(id), "DELETE", null, true),
 };
 
 // Usuarios: todo pide admin.
 export const apiUsers = {
   getAll: () => request("/users", "GET", null, true),
-  getById: (id) => request("/users/" + id, "GET", null, true),
-  update: (id, data) => request("/users/" + id, "PUT", data, true),
-  remove: (id) => request("/users/" + id, "DELETE", null, true),
+  getById: (id) =>
+    request("/users/" + encodeURIComponent(id), "GET", null, true),
+  update: (id, data) =>
+    request("/users/" + encodeURIComponent(id), "PUT", data, true),
+  remove: (id) =>
+    request("/users/" + encodeURIComponent(id), "DELETE", null, true),
 };
