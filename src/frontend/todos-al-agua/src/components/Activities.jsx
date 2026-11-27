@@ -50,7 +50,6 @@ export default function Activities() {
         <SectionHeading
           eyebrow="Nuestras actividades"
           title="Encontrá tu lugar en el agua"
-          description="Desde los primeros chapuzones hasta el entrenamiento técnico: elegí la propuesta que mejor se adapte a vos."
         />
 
         <div className="activity-grid">
