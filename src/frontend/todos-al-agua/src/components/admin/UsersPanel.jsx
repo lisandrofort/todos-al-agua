@@ -130,7 +130,9 @@ export default function UsersPanel() {
   const mensajeConfirmacion =
     confirmacion?.tipo === "admin"
       ? `Estás por dar el rol más alto a ${confirmacion.nombre} (${confirmacion.email}). Podrá ver y modificar usuarios, menú y huerta.`
-      : `Se va a eliminar la cuenta de ${confirmacion.nombre} (${confirmacion.email}). Esta acción no se puede deshacer.`;
+      : confirmacion?.tipo === "eliminar"
+        ? `Se va a eliminar la cuenta de ${confirmacion.nombre} (${confirmacion.email}). Esta acción no se puede deshacer.`
+        : "";
   const textoConfirmacion =
     confirmacion?.tipo === "admin"
       ? "Sí, dar rol de administrador"
