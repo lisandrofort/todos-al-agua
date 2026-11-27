@@ -2,6 +2,7 @@ import "../theme.css";
 import "./Home.css";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
+import HomeSideCards from "../components/HomeSideCards";
 import Activities from "../components/Activities";
 import Teaching from "../components/Teaching";
 import Contact from "../components/Contact";
@@ -17,6 +18,7 @@ export default function Home() {
 
       <main>
         <Hero />
+        <HomeSideCards />
         <Activities />
         <Teaching />
         <Contact />

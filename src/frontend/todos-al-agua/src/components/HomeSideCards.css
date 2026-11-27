@@ -1,0 +1,150 @@
+.side-cards {
+  position: relative;
+  padding: 32px 0 30px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f4f9fc 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(0, 85, 165, 0.08);
+}
+
+.side-cards::before,
+.side-cards::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(24px, 8vw, 120px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.side-cards::before {
+  left: 0;
+  background: linear-gradient(90deg, #f4f9fc, rgba(244, 249, 252, 0));
+}
+
+.side-cards::after {
+  right: 0;
+  background: linear-gradient(270deg, #ffffff, rgba(255, 255, 255, 0));
+}
+
+.side-cards-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-behavior: auto;
+  overscroll-behavior-x: contain;
+}
+
+.side-cards-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.side-cards-viewport:focus-visible {
+  outline: 3px solid var(--admin-focus, #0055a5);
+  outline-offset: -3px;
+}
+
+.side-cards-via {
+  display: flex;
+  width: max-content;
+}
+
+.side-cards-grupo {
+  display: flex;
+  gap: 20px;
+  padding-right: 20px;
+}
+
+.side-card {
+  flex: none;
+  width: 292px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 85, 165, 0.1);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 14px 34px rgba(0, 85, 165, 0.09);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.side-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 44px rgba(0, 85, 165, 0.16);
+}
+
+.side-card-imagen {
+  height: 148px;
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.side-card-imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.side-card-cuerpo {
+  padding: 16px 20px 20px;
+}
+
+.side-card-etiqueta {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 168, 232, 0.12);
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.side-card h3 {
+  margin: 10px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-surface);
+}
+
+.side-card p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #62707a;
+}
+
+.side-card-fuente {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.side-card-fuente:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .side-cards {
+    padding: 26px 0;
+  }
+
+  .side-card {
+    width: 250px;
+  }
+
+  .side-card-imagen {
+    height: 126px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .side-card {
+    transition: none;
+  }
+}
