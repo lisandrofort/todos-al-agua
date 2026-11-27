@@ -299,6 +299,36 @@
   font-weight: 600;
 }
 
+.admin-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.admin-sort-btn:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 3px;
+}
+
+.admin-sort-arrow {
+  color: var(--admin-muted);
+  font-size: 10px;
+  line-height: 1;
+}
+
+.admin-sort-arrow.is-active {
+  color: var(--admin-ink);
+  font-size: 11px;
+}
+
 .admin-pagination {
   display: flex;
   align-items: center;

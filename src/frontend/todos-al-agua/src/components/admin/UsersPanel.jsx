@@ -46,6 +46,7 @@ export default function UsersPanel() {
   const [confirmacion, setConfirmacion] = useState(null);
   const [busqueda, setBusqueda] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [orden, setOrden] = useState({ campo: null, direccion: "asc" });
 
   const cancelarConfirmacion = useCallback(() => setConfirmacion(null), []);
 
@@ -147,12 +148,20 @@ export default function UsersPanel() {
         `${u.nombre ?? ""} ${u.email ?? ""}`.toLowerCase().includes(filtro),
       )
     : users;
+  const usuariosOrdenados = orden.campo
+    ? [...usuariosFiltrados].sort((a, b) => {
+        const va = String(a[orden.campo] ?? "").toLowerCase();
+        const vb = String(b[orden.campo] ?? "").toLowerCase();
+        const comparison = va.localeCompare(vb, "es", { sensitivity: "base" });
+        return orden.direccion === "asc" ? comparison : -comparison;
+      })
+    : usuariosFiltrados;
   const totalPaginas = Math.max(
     1,
-    Math.ceil(usuariosFiltrados.length / POR_PAGINA),
+    Math.ceil(usuariosOrdenados.length / POR_PAGINA),
   );
   const paginaActual = Math.min(pagina, totalPaginas);
-  const usuariosVisibles = usuariosFiltrados.slice(
+  const usuariosVisibles = usuariosOrdenados.slice(
     (paginaActual - 1) * POR_PAGINA,
     paginaActual * POR_PAGINA,
   );
@@ -160,6 +169,25 @@ export default function UsersPanel() {
   function cambiarBusqueda(event) {
     setBusqueda(event.target.value);
     setPagina(1);
+  }
+
+  function cambiarOrden(campo) {
+    setOrden((current) => ({
+      campo,
+      direccion:
+        current.campo === campo && current.direccion === "asc" ? "desc" : "asc",
+    }));
+    setPagina(1);
+  }
+
+  function flechaOrden(campo) {
+    if (orden.campo !== campo) return "↕";
+    return orden.direccion === "asc" ? "▲" : "▼";
+  }
+
+  function ariaOrden(campo) {
+    if (orden.campo !== campo) return "none";
+    return orden.direccion === "asc" ? "ascending" : "descending";
   }
 
   return (
@@ -197,8 +225,44 @@ export default function UsersPanel() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Email</th>
+              <th aria-sort={ariaOrden("nombre")}>
+                <button
+                  className="admin-sort-btn"
+                  type="button"
+                  onClick={() => cambiarOrden("nombre")}
+                >
+                  Nombre
+                  <span
+                    className={
+                      orden.campo === "nombre"
+                        ? "admin-sort-arrow is-active"
+                        : "admin-sort-arrow"
+                    }
+                    aria-hidden="true"
+                  >
+                    {flechaOrden("nombre")}
+                  </span>
+                </button>
+              </th>
+              <th aria-sort={ariaOrden("email")}>
+                <button
+                  className="admin-sort-btn"
+                  type="button"
+                  onClick={() => cambiarOrden("email")}
+                >
+                  Email
+                  <span
+                    className={
+                      orden.campo === "email"
+                        ? "admin-sort-arrow is-active"
+                        : "admin-sort-arrow"
+                    }
+                    aria-hidden="true"
+                  >
+                    {flechaOrden("email")}
+                  </span>
+                </button>
+              </th>
               <th>Rol</th>
               <th>Permisos</th>
               <th>Cambiar rol</th>
