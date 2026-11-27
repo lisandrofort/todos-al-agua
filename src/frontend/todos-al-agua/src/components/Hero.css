@@ -17,6 +17,7 @@
   opacity: 0.4;
   background-image: radial-gradient(rgba(255, 255, 255, 0.24) 1px, transparent 1px);
   background-size: 32px 32px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 75%);
   mask-image: linear-gradient(to bottom, #000, transparent 75%);
 }
 

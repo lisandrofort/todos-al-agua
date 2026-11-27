@@ -340,6 +340,12 @@
   border-left: 4px solid #fff;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .admin-toast {
+    animation: none;
+  }
+}
+
 @keyframes admin-toast-in {
   from {
     opacity: 0;

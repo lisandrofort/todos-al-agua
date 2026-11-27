@@ -37,6 +37,15 @@
   color: var(--color-primary);
 }
 
+.home-nav a:focus-visible,
+.header-login:focus-visible,
+.header-menu-toggle:focus-visible,
+.header-mobile-nav a:focus-visible,
+.header-mobile-nav button:focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 3px;
+}
+
 .header-cta {
   min-height: 44px;
   padding-inline: 20px;

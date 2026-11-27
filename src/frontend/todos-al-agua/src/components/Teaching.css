@@ -1,4 +1,4 @@
-:is(.home, .cantina) .split {
+:is(.home, .cantina, .huerta) .split {
   display: grid;
   grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr);
   align-items: center;

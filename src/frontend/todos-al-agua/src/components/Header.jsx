@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { visibleCta, visibleNavLinks } from "../utils/navLinks";
@@ -44,6 +44,15 @@ export default function Header({
     logout();
   }
 
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    function alPresionar(event) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+    window.addEventListener("keydown", alPresionar);
+    return () => window.removeEventListener("keydown", alPresionar);
+  }, [menuOpen]);
+
   function renderLink(link) {
     return link.href.startsWith("/") ? (
       <NavLink
@@ -80,7 +89,7 @@ export default function Header({
           <button
             className="header-login header-logout"
             type="button"
-            onClick={logout}
+            onClick={handleLogout}
           >
             Cerrar sesión
           </button>
