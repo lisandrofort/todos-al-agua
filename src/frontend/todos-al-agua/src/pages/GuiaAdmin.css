@@ -359,25 +359,6 @@
   color: var(--admin-muted);
 }
 
-.guia-pie {
-  margin-top: 44px;
-  padding-top: 24px;
-  border-top: 1px solid var(--admin-line);
-  text-align: center;
-}
-
-.guia-pie p {
-  margin: 0 0 10px;
-  color: var(--admin-muted);
-  font-size: 13px;
-}
-
-.guia-pie a {
-  color: var(--admin-accent-dark);
-  font-size: 14px;
-  font-weight: 700;
-}
-
 @media (max-width: 900px) {
   .guia-hero {
     grid-template-columns: 1fr;

@@ -8,10 +8,6 @@ import {
 } from "../ui/icons";
 import "./GuiaAdmin.css";
 
-const GUIA_URL =
-  import.meta.env.VITE_GUIA_ADMIN_URL ||
-  "https://guia-de-usuario-administrador.netlify.app";
-
 function GuiaHero() {
   return (
     <svg viewBox="0 0 320 220" className="guia-hero-art" aria-hidden="true">
@@ -273,12 +269,6 @@ export default function GuiaAdmin() {
         </div>
       </section>
 
-      <footer className="guia-pie">
-        <p>¿Querés el documento completo para imprimir?</p>
-        <a href={GUIA_URL} target="_blank" rel="noopener noreferrer">
-          Ver documento anterior (versión extendida) ↗
-        </a>
-      </footer>
     </section>
   );
 }
