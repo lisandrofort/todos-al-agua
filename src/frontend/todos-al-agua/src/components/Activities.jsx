@@ -1,11 +1,6 @@
 import ActivityCard from "../ui/ActivityCard";
 import SectionHeading from "../ui/SectionHeading";
-import {
-  AdultSwimIcon,
-  AquagymIcon,
-  ChildSwimIcon,
-  TrainingIcon,
-} from "../ui/icons";
+import { AdultSwimIcon, ChildSwimIcon, TrainingIcon } from "../ui/icons";
 import "./Activities.css";
 
 const activities = [
@@ -24,14 +19,6 @@ const activities = [
     tag: "Inicial a avanzado",
     tone: "primary",
     icon: <AdultSwimIcon />,
-  },
-  {
-    title: "Aquagym",
-    description:
-      "Entrenamiento de bajo impacto para moverte, tonificar y cuidar tus articulaciones.",
-    tag: "Todo el año",
-    tone: "sun",
-    icon: <AquagymIcon />,
   },
   {
     title: "Perfeccionamiento",
