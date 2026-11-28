@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Home from "../pages/Home";
 import Cantina from "../pages/Cantina";
+import Panificadora from "../pages/Panificadora";
 import Huerta from "../pages/Huerta";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -20,6 +21,7 @@ import { PERMISOS } from "../auth/permissions";
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
       { path: "/cantina", element: <Cantina /> },
+      { path: "/panificadora", element: <Panificadora /> },
       { path: "/huerta", element: <Huerta /> },
       {
         element: <GuestRoute />,
