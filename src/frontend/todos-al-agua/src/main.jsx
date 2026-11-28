@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router";
 import AuthProvider from "./auth/AuthProvider";
 import SessionWarning from "./components/SessionWarning";
+import WelcomeGate from "./components/WelcomeGate";
 import router from "./routes/index.jsx";
 import "./index.css";
 
@@ -11,6 +12,7 @@ import "./index.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
+      <WelcomeGate />
       <SessionWarning />
       <RouterProvider router={router} />
     </AuthProvider>

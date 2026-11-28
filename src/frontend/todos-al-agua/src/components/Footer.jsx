@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { visibleNavLinks } from "../utils/navLinks";
+import { WELCOME_EVENT } from "./WelcomeGate";
 import "./Footer.css";
 
 export default function Footer({ links }) {
@@ -39,7 +40,16 @@ export default function Footer({ links }) {
           )}
         </nav>
 
-        <p>© {new Date().getFullYear()} Todos al Agua</p>
+        <div className="footer-final">
+          <button
+            className="footer-replay"
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(WELCOME_EVENT))}
+          >
+            Volver a ver la bienvenida
+          </button>
+          <p>© {new Date().getFullYear()} Todos al Agua</p>
+        </div>
       </div>
     </footer>
   );
