@@ -1,0 +1,111 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.22), transparent 42%),
+    linear-gradient(135deg, #004b91, var(--color-primary, #0055a5) 52%, var(--color-background, #00a8e8));
+  cursor: pointer;
+  animation: loading-aparecer 0.3s ease-out both;
+}
+
+.loading-screen.is-saliendo {
+  animation: loading-desaparecer 0.4s ease-in forwards;
+}
+
+.loading-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 360px);
+  text-align: center;
+  color: #fff;
+  font-family: var(--font-family-base, sans-serif);
+}
+
+.loading-logo {
+  display: block;
+  width: min(240px, 64vw);
+  height: auto;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+  animation: loading-logo 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.loading-marca {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  animation: loading-texto 0.6s ease-out 0.2s both;
+}
+
+.loading-linea {
+  width: min(240px, 70vw);
+  height: 2px;
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.loading-linea span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+  transform-origin: left center;
+  animation: loading-progreso 1.2s linear both;
+}
+
+.loading-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes loading-aparecer {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes loading-desaparecer {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes loading-logo {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes loading-texto {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes loading-progreso {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.forzar-animacion) .loading-screen,
+  html:not(.forzar-animacion) .loading-logo,
+  html:not(.forzar-animacion) .loading-marca,
+  html:not(.forzar-animacion) .loading-linea span {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+  }
+}
