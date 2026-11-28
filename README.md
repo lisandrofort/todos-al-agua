@@ -1,6 +1,6 @@
 # Todos al Agua — Trabajo Final Integrador
 
-Aplicación web para la asociación **Todos al Agua Necochea**: sitio público con la carta de la cantina y la huerta, acceso con cuentas reales y un panel de administración con permisos por rol.
+Aplicación web para la asociación **Todos al Agua Necochea**: sitio público con la cantina inclusiva El Muelle, la panificadora Flor de Pan y la huerta/vivero, acceso con cuentas reales y un panel de administración con permisos por rol.
 
 ## Stack
 
@@ -142,7 +142,7 @@ Base local: `http://localhost:3000`. Los endpoints privados requieren cabecera `
 
 | Ruta | Acceso |
 |---|---|
-| `/`, `/cantina`, `/huerta` | públicas |
+| `/`, `/cantina`, `/panificadora`, `/huerta` | públicas |
 | `/login`, `/registro` | solo invitados |
 | `/recuperar`, `/restablecer?token=...` | pública: pedir y completar el cambio de contraseña |
 | `/admin` | requiere acceso al panel → redirige al panel correspondiente |

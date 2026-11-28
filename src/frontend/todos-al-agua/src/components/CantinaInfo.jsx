@@ -26,9 +26,9 @@ export default function CantinaInfo() {
             Comida casera, hecha para compartir
           </h2>
           <p className="text-body">
-            El Muelle es la cantina inclusiva de Todos al Agua. Un espacio para
-            encontrarse después de la pileta, almorzar en familia y descubrir
-            platos pensados para toda la comunidad.
+            El Muelle es la cantina inclusiva de la Asociación Civil Todos al
+            Agua. Un espacio de trabajo y encuentro donde la comunidad puede
+            almorzar y descubrir platos pensados para todos.
           </p>
 
           <FeatureList items={features} />
